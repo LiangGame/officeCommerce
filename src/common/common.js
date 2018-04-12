@@ -348,3 +348,25 @@ var MD5 = function (string) {
 
     return temp.toLowerCase();
 }
+//获取浏览器窗口高度
+export function getWinHeight(){
+  let winHeight=0;
+  if (window.innerHeight)
+    winHeight = window.innerHeight;
+  else if ((document.body) && (document.body.clientHeight))
+    winHeight = document.body.clientHeight;
+
+
+  return winHeight;
+}
+// 高度自适应
+export function setSize(num){
+  let winHeight=0;
+  if (window.innerHeight){
+    winHeight = window.innerHeight;
+  } else if ((document.body) && (document.body.clientHeight)){
+    winHeight = document.body.clientHeight;
+  }
+  let wrapperHeight = (winHeight -num) + 'px';  // num 需要减去的高度
+  this.$refs.wrapper.style.height = wrapperHeight;
+}
