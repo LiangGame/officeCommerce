@@ -20,6 +20,13 @@
         title:"添加"
       };
     },
+    created(){
+      if(this.isEdit == '1'){
+        this.title = '编辑'
+      }else if(this.isEdit == '2'){
+        this.title = '查看'
+      }
+    },
     methods: {
       handleClose(done) {
         this.$emit('updateIsShow', false);

@@ -39,6 +39,10 @@
             prop="address"
             label="操作"
             align="center">
+            <template slot-scope="scope">
+              <buttons @look="operate(scope.row.ID,2)" @edit="operate(scope.row.ID,1)"
+                       @delete="del(scope.row.ID)"/>
+            </template>
           </el-table-column>
         </el-table>
       </div>
@@ -60,17 +64,20 @@
 </template>
 
 <script>
-  import jurisdictionOperate from './operate/jurisdictionOperate'
   import {getWinHeight} from '@/common/common'
+  import {MessageBox, Message} from 'element-ui';
+  import jurisdictionOperate from './operate/jurisdictionOperate'
+  import Buttons from '@/components/Buttons'
+
   export default {
     name: "jurisdiction",
-    components: {jurisdictionOperate},
+    components: {jurisdictionOperate,Buttons},
     data() {
       return {
         listHeight: this.getWinHeight() - 180,
         orderId: '',
         type: '0',
-        tableData: [],
+        tableData: [{ID:1}],
         isEdit: '0',//0是添加，1是编辑,2是查看
         isShowOperate: false,
         // 分页
@@ -93,11 +100,46 @@
       loadData() {
 
       },
-      operate(type, id) {
+      operate(id,type) {
         this.isShowOperate = true;
         this.isEdit = type;
         this.ID = id;
       },
+      del(id) {
+        MessageBox({
+          title: '提示',
+          message: `确定删除这条记录？`,
+          showCancelButton: true,
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          beforeClose: (action, instance, done) => {
+            if (action === 'confirm') {
+              done();
+              this.$http({
+                url: "",
+                method: 'DELETE',
+              }).then(data => {
+                this.loadData(this.datePicker);
+                Message({
+                  showClose: true,
+                  message: '删除成功!',
+                  type: 'success'
+                });
+              }).catch(err => {
+                Message({
+                  showClose: true,
+                  message: '请求失败!',
+                  type: 'error'
+                });
+              })
+              return true
+            } else {
+              done();
+              return false
+            }
+          }
+        });
+      }
     }
   }
 </script>
