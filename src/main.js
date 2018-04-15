@@ -23,9 +23,26 @@ Vue.config.productionTip = false
 
 
 /* eslint-disable no-new */
-new Vue({
+// new Vue({
+//   el: '#app',
+//   router,
+//   components: { App },
+//   template: '<App/>'
+// })
+export const vue = new Vue({
   el: '#app',
   router,
-  components: { App },
-  template: '<App/>'
+  render: h => h(App),
+  data:{
+    Bus: new Vue()
+  }
+})
+
+// cookie失效重新登陆
+router.beforeResolve((to, from, next) => {
+  if( to.path.indexOf('/')==-1 && vue.Cookie.get('user')==undefined){
+    next({ path: '/'})
+  }else{
+    next();
+  }
 })

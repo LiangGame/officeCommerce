@@ -31,13 +31,18 @@
             align="center">
           </el-table-column>
           <el-table-column
+            prop="date"
+            label="用户姓名"
+            align="center">
+          </el-table-column>
+          <el-table-column
             prop="name"
             label="下单时间"
             align="center">
           </el-table-column>
           <el-table-column
-            prop="address"
-            label="收货人"
+            prop="date"
+            label="购买数量"
             align="center">
           </el-table-column>
           <el-table-column
@@ -46,15 +51,28 @@
             align="center">
           </el-table-column>
           <el-table-column
+            prop="name"
+            label="付款时间"
+            align="center">
+          </el-table-column>
+          <el-table-column
+            prop="payMent"
+            label="支付方式"
+            align="center">
+          </el-table-column>
+          <el-table-column
             prop="address"
             label="订单状态"
             align="center">
           </el-table-column>
           <el-table-column
-            prop="address"
             label="操作"
             align="center"
-            width="100">
+            width="200">
+            <template slot-scope="scope">
+              <el-button type="success" size="small" @click="showOperate(scope.row.id)">查看</el-button>
+              <el-button type="primary" size="small" @click="confirmOrder(scope.row.id)">发货</el-button>
+            </template>
           </el-table-column>
         </el-table>
       </div>
@@ -68,6 +86,34 @@
         layout="total,sizes, prev, pager, next"
         :total="totalCount">
       </el-pagination>
+      <!--弹窗-->
+      <el-dialog
+        title="查看订单详情"
+        :visible="visible"
+        width="1000px"
+        :closeOnClickModal="false"
+        :before-close="handleClose">
+        <el-form :model="ruleForm" label-width="100px" class="demo-ruleForm">
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <el-form-item label="商品名称" prop="goodName">
+                <span class="good_info"></span>
+              </el-form-item>
+              <el-form-item label="商品描述" prop="goodDescribe">
+                <span class="good_info"></span>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="商品名称" prop="goodName">
+                <span class="good_info"></span>
+              </el-form-item>
+              <el-form-item label="商品描述" prop="goodDescribe">
+                <span class="good_info"></span>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -89,11 +135,22 @@
           label: '已发货'
         }],
         type: '0',
-        tableData: [],
+        tableData: [{id:1}],
         // 分页
         currentPage: 1,
         pageCount: 10,
         totalCount: 0,
+        //弹窗
+        visible:false,
+        ruleForm: {
+          goodName: '',
+          goodDescribe: '',
+          rewardTotal: '',
+          rewardSecond: '',
+          max: '',
+          img: [],
+          price: '',
+        },
       }
     },
     methods: {
@@ -107,6 +164,58 @@
         this.pageCount = val; // 每页条数
         this.loadData(this.datePicker);
       },
+      //查看订单详情
+      showOperate(id){
+        if(id){
+          this.$http({
+            url: "/order/getListAdminByUserID",
+            method: "GET",
+            params: {userID:id}
+          }).then(data => {
+            console.log(data);
+            if (data.errCode == 0) {
+              this.ruleForm = data.info;
+            }
+          }).catch(error => {
+          })
+        }
+        this.visible = true;
+      },
+      //发货
+      confirmOrder(){
+        this.$http({
+          url: "/order/confirmOrder",
+          method: "GET",
+          params: {orderID:'',userID:'',count:'',goodID:''}
+        }).then(data => {
+          console.log(data);
+          if (data.errCode == 0) {
+            this.ruleForm = data.info;
+          }
+        }).catch(error => {
+        })
+      },
+      //关闭弹窗
+      handleClose(done) {
+        this.visible = false;
+      },
+      //获取订单列表
+      loadData(){
+        this.$http({
+          url: "/order/getListAdmin",
+          method: "GET",
+          params: {}
+        }).then(data => {
+          console.log(data);
+          if (data.errCode == 0) {
+
+          }
+        }).catch(error => {
+        })
+      }
+    },
+    created(){
+      this.loadData();
     }
   }
 </script>
@@ -147,6 +256,9 @@
             th {
               color: #333;
             }
+          }
+          .el-button--small{
+            padding: 4px 6px;
           }
         }
       }

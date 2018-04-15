@@ -23,6 +23,7 @@ const routes = [
   {path: '/login', name: '登录', component: _import('login/index')},
 ]
 
+//去除地址栏 #
 export default new Router({
   mode: 'history',
   routes: routes

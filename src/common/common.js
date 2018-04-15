@@ -1,7 +1,9 @@
 // import { zh_CN } from '@/common/zh_CN.js'
 // api接口地址
-export const apiUrl = 'http://120.76.230.93:8255/api/';
-
+export const apiUrl = 'http://103.205.5.222:3000';
+// export const apiUrl = 'http://127.0.0.1:3000';
+export const uploadUrl = apiUrl+'/upload';
+export const fileUrl = apiUrl+'/uploads/';
 //获取文本中img标签的src
 export function getImgSrc(str){
     var regex = /<img.*?src="(.*?)"/;

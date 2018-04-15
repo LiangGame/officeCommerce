@@ -1,8 +1,8 @@
 <template>
     <!--按钮：编辑、删除、添加  -->
     <div class="table-three-buttons-container">
-        <span><el-button type="success" size="mini" @click="$emit('look')">查看</el-button></span>
-        <span><el-button type="warning" size="mini" @click="$emit('edit')" v-show="Level==0 || Level==1 ">编辑</el-button></span>
+        <!--<span><el-button type="success" size="mini" @click="$emit('look')">查看</el-button></span>-->
+        <span><el-button type="primary" size="mini" @click="$emit('edit')" v-show="Level==0 || Level==1 ">编辑</el-button></span>
         <span><el-button type="danger" size="mini"  @click="$emit('delete')" v-show="Level==0">删除</el-button></span>
     </div>
 </template>

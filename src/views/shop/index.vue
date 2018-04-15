@@ -20,33 +20,56 @@
           :height="listHeight"
           style="width: 100%">
           <el-table-column
-            prop="date"
+            prop="id"
             label="编号"
             align="center"
-            width="260">
+            width="80">
           </el-table-column>
           <el-table-column
-            prop="name"
+            prop="img"
+            label="图片"
+            align="center"
+            width="150">
+            <template slot-scope="scope">
+              <img :src="fileUrl+scope.row.img" :alt="scope.row.goodName" width="120" height="120">
+              <!--<img src="https://ss0.bdstatic.com/6ONWsjip0QIZ8tyhnq/it/u=3618554304,2887917621&fm=77&w_h=121_75&cs=2820658166,1330608299"-->
+                <!--:alt="scope.row.goodName" width="120" height="120">-->
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="goodName"
             label="商品名称"
+            align="center"
+            width="300">
+          </el-table-column>
+          <el-table-column
+            prop="goodDescribe"
+            label="商品描述"
             align="center">
           </el-table-column>
           <el-table-column
-            prop="address"
+            prop="price"
             label="价格"
             align="center"
-            width="150">
+            width="80">
           </el-table-column>
           <el-table-column
-            prop="address"
-            label="状态"
+            prop="rewardTotal"
+            label="一级佣金"
             align="center"
-            width="150">
+            width="110">
           </el-table-column>
           <el-table-column
-            prop="address"
-            label="库存"
+            prop="rewardSecond"
+            label="二级佣金"
             align="center"
-            width="150">
+            width="110">
+          </el-table-column>
+          <el-table-column
+            prop="max"
+            label="最大购买数量"
+            align="center"
+            width="110">
           </el-table-column>
           <el-table-column
             prop="address"
@@ -54,8 +77,8 @@
             align="center"
             width="300">
             <template slot-scope="scope">
-              <buttons @look="operate(scope.row.ID,2)" @edit="operate(scope.row.ID,1)"
-                                   @delete="del(scope.row.ID)"/>
+              <buttons @edit="operate(scope.row,1)"
+                       @delete="del(scope.row.ID)"/>
             </template>
           </el-table-column>
         </el-table>
@@ -72,28 +95,30 @@
       </el-pagination>
     </div>
     <!--操作弹窗-->
-    <shop-operate v-if="isShowOperate" :visible="isShowOperate" :isEdit="isEdit" :ID="ID"
+    <shop-operate v-if="isShowOperate" :visible="isShowOperate" :isEdit="isEdit" :info="info"
                   @updateIsShow="val => isShowOperate = val" @updateInfo="loadData"/>
   </div>
 </template>
 
 <script>
-  import {getWinHeight} from '@/common/common'
+  import {getWinHeight,fileUrl} from '@/common/common'
   import {MessageBox, Message} from 'element-ui';
   import shopOperate from './operate/shopOperate'
   import Buttons from '@/components/Buttons'
 
   export default {
     name: "shop",
-    components: {shopOperate,Buttons},
+    components: {shopOperate, Buttons},
     data() {
       return {
         listHeight: this.getWinHeight() - 180,
+        fileUrl:fileUrl,
         orderId: '',
         type: '0',
-        tableData: [{ID:1}],
+        tableData: [],
         isEdit: '0',//0是添加，1是编辑,2是查看
         isShowOperate: false,
+        info: null,
         // 分页
         currentPage: 1,
         pageCount: 10,
@@ -111,13 +136,24 @@
         this.pageCount = val; // 每页条数
         this.loadData(this.datePicker);
       },
+      //获取订单列表
       loadData() {
-
+        this.$http({
+          url: "/goods",
+          method: "GET",
+          params: {}
+        }).then(data => {
+          console.log(data);
+          if (data.length) {
+            this.tableData = data;
+          }
+        }).catch(error => {
+        })
       },
-      operate(id,type) {
+      operate(item, type) {
         this.isShowOperate = true;
         this.isEdit = type;
-        this.ID = id;
+        this.info = item;
       },
       del(id) {
         MessageBox({
@@ -130,19 +166,29 @@
             if (action === 'confirm') {
               done();
               this.$http({
-                url: "",
-                method: 'DELETE',
+                url: "/goods/delGoods",
+                method: 'POST',
+                data:{id:id}
               }).then(data => {
-                this.loadData(this.datePicker);
-                Message({
-                  showClose: true,
-                  message: '删除成功!',
-                  type: 'success'
-                });
+                if(data.errCode == 0){
+                  this.loadData();
+                  Message({
+                    showClose: true,
+                    message: '删除成功!',
+                    type: 'success'
+                  });
+                }else {
+                  Message({
+                    showClose: true,
+                    message: data.info,
+                    type: 'success'
+                  });
+                }
+
               }).catch(err => {
                 Message({
                   showClose: true,
-                  message: '请求失败!',
+                  message: '删除失败!',
                   type: 'error'
                 });
               })
@@ -154,6 +200,10 @@
           }
         });
       }
+    },
+    created() {
+      console.log('文件路径:',this.fileUrl);
+      this.loadData();
     }
   }
 </script>
@@ -187,7 +237,7 @@
           display: inline-block;
           width: 79%;
         }
-        .el-button--mini, .el-button--mini.is-round{
+        .el-button--mini, .el-button--mini.is-round {
           padding: 6px 10px;
         }
       }
