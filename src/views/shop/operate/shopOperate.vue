@@ -46,8 +46,9 @@
                 :action="uploadUrl"
                 :multiple="false"
                 :on-preview="handlePreview"
+                :on-success="successFile"
                 :on-remove="handleRemove"
-                :file-list="ruleForm.img"
+                :file-list="fileList"
                 :auto-upload="false">
                 <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
                 <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器
@@ -67,7 +68,9 @@
 </template>
 
 <script>
-  import {uploadUrl} from "@/common/common";
+  import {uploadUrl,fileUrl} from "@/common/common";
+  import Qs from 'qs';
+  import {Message} from 'element-ui'
 
   export default {
     name: "shopOperate",
@@ -82,9 +85,10 @@
           rewardTotal: '',
           rewardSecond: '',
           max: '',
-          img: [],
+          img: '',
           price: '',
         },
+        fileList:[],
         rules: {
           goodName: [{required: true, message: '请输入商品名称', trigger: 'blur'}, {
             min: 3,
@@ -105,9 +109,11 @@
       console.log('商品数据:',this.info);
       if (this.isEdit == '1') {
         this.title = '编辑';
-        let imgList = this.info.img;
-        this.info.img = [];
-        this.info.img.push({name:this.info.goodName,url:imgList});
+        let imgList = fileUrl + this.info.img;
+        console.log(imgList);
+        this.info.img = '';
+        this.fileList.push({name:this.info.goodName,url:imgList})
+        // this.info.img.push({name:this.info.goodName,url:imgList});
         this.ruleForm = this.info;
       }
     },
@@ -147,9 +153,14 @@
         }).then(data => {
           console.log(data);
           if (data.errCode == 0) {
-            // this.$router.push('/login');
+            this.$emit('updateIsShow', false);
+            this.$emit('updateInfo');
           } else if (data.errCode != 0) {
-            Toast(data.info);
+            Message({
+              showClose: true,
+              message: data.info,
+              type: 'error'
+            });
           }
         }).catch(error => {
 
@@ -163,13 +174,27 @@
       handleRemove(file, fileList) {
         console.log(file, fileList);
       },
+      //上传成功
+      successFile(response){
+        console.log(response);
+        if(response.errCode == 0){
+          this.fileList.push({name:response.info,url:response.info});
+          this.ruleForm.img = response.info;
+        }else {
+          Message({
+            showClose: true,
+            message: response.info,
+            type: 'error'
+          });
+        }
+      },
       //上传文件回调
       handlePreview(file) {
-        console.log(file);
+        console.log(174,file);
       },
       //上传文件
       submitUpload() {
-        this.$refs.upload.submit();
+        this.$refs.upload.submit()
       }
     }
   }

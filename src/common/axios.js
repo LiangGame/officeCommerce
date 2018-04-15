@@ -8,6 +8,7 @@ axios.defaults.baseURL = apiUrl;
 axios.defaults.timeout = 15 * 1000;
 // axios.defaults.headers = {'Authorization': 'BasicAuth ' + Cookie.get('ticket')};
 axios.defaults.headers = {'Authorization': 'BasicAuth '};
+axios.defaults.withCredentials = true;
 //添加一个请求拦截器
 axios.interceptors.request.use(function(config){
     //在请求发出之前进行一些操作

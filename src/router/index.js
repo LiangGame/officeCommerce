@@ -1,12 +1,14 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import Cookie from 'js-cookie'
+import {vue} from "../main";
 
 const _import = require('./_import_' + process.env.NODE_ENV)
 
 
 Vue.use(Router)
 
-const routes = [
+var routes = [
   {
     path: '/', name: '首页', component: _import('layout/index'),
     redirect: '/order',
@@ -18,10 +20,18 @@ const routes = [
       {path: '/vip', name: '会员管理', component: _import('vip/index')},
       {path: '/jurisdiction', name: '权限管理', component: _import('jurisdiction/index')},
       {path: '/dataAnalysis', name: '数据分析', component: _import('dataAnalysis/index')}
-    ]
+    ],
+    beforeEnter: (to, from, next) => {
+      if (to.path.indexOf('/login') == -1 && Cookie.get('level') == undefined) {
+        next({path: '/login'})
+      } else {
+        next();
+      }
+    }
   },
   {path: '/login', name: '登录', component: _import('login/index')},
 ]
+
 
 //去除地址栏 #
 export default new Router({

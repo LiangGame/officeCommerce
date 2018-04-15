@@ -28,6 +28,22 @@ export function getNowFormatDate() {
         + seperator2 + date.getSeconds();
     return currentdate;
 }
+//时间戳转化时间
+export function timestampToTime(timestamp) {
+  if (timestamp.length == 13) {
+    var date = new Date(+timestamp);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+  } else {
+    var date = new Date(+timestamp * 1000);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+  }
+
+  var Y = date.getFullYear() + '-',
+    M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-',
+    D = date.getDate() + ' ',
+    h = date.getHours() + ':',
+    m = date.getMinutes() + ':',
+    s = date.getSeconds();
+  return Y + M + D + h + m + s;
+}
 // //翻译
 //  export function translate(text){
 //     if(localStorage.translateType != 'EN'){

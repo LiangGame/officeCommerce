@@ -1,25 +1,25 @@
 <template>
   <div class="header_container">
     <ul class="nav-list">
-      <li>
+      <li v-if="level == 0 || level == 1">
         <router-link to='/order' active-class="active-nav">订单管理</router-link>
       </li>
-      <li>
+      <li v-if="level == 0 || level == 3">
         <router-link to='/shop' active-class="active-nav">商城管理</router-link>
       </li>
-      <li>
+      <li v-if="level == 0 || level == 1 || level == 2">
         <router-link to='/money' active-class="active-nav">财务管理</router-link>
       </li>
-      <li>
+      <li v-if="level == 0 || level == 3 || level == 4">
         <router-link to='/consignment' active-class="active-nav">寄售管理</router-link>
       </li>
-      <li>
+      <li v-if="level == 0 || level == 4">
         <router-link to='/vip' active-class="active-nav">会员管理</router-link>
       </li>
-      <li>
+      <li v-if="level == 0 || level == 3">
         <router-link to='/jurisdiction' active-class="active-nav">权限管理</router-link>
       </li>
-      <li>
+      <li v-if="level == 0 || level == 3">
         <router-link to='/dataAnalysis' active-class="active-nav">数据分析</router-link>
       </li>
       <li class="exit" @click="esc">
@@ -32,10 +32,19 @@
 <script>
   export default {
     name: "myHeader",
-    methods:{
-      esc(){
+    data() {
+      return {
+        level: this.Cookie.get('level')
+      }
+    },
+    methods: {
+      esc() {
+        this.Cookie.remove('level');
         this.$router.push('/login');
       }
+    },
+    created() {
+
     }
   }
 </script>

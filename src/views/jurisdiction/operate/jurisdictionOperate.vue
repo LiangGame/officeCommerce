@@ -6,17 +6,16 @@
       width="450px"
       :closeOnClickModal="false"
       :before-close="handleClose">
-      <el-form :model="ruleForm2" status-icon :rules="rules2" ref="ruleForm2" label-width="100px" class="demo-ruleForm">
-        <el-form-item label="账号" prop="pass">
-          <el-input type="password" v-model="ruleForm2.pass" auto-complete="off"></el-input>
+      <el-form :model="data" status-icon ref="data" label-width="100px" class="demo-ruleForm">
+        <el-form-item label="账号">
+          <el-input type="text" v-model="data.user" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="密码" prop="checkPass">
-          <el-input type="password" v-model="ruleForm2.checkPass" auto-complete="off"></el-input>
+        <el-form-item label="密码">
+          <el-input type="text" v-model="data.password" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="权限">
           <el-select
-            v-model="ruleForm2.age"
-            multiple
+            v-model="data.type"
             collapse-tags
             placeholder="请选择">
             <el-option
@@ -28,8 +27,8 @@
           </el-select>
         </el-form-item>
         <el-form-item label-width="0" align="center">
-          <el-button type="primary" @click="submitForm('ruleForm2')">提交</el-button>
-          <el-button @click="resetForm('ruleForm2')">重置</el-button>
+          <el-button type="primary" @click="submitForm('data')">提交</el-button>
+          <el-button @click="resetForm('data')">重置</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -37,50 +36,50 @@
 </template>
 
 <script>
+  import Qs from 'qs';
+  import {Message} from 'element-ui'
+
   export default {
     name: "jurisdictionOperate",
-    props:[ 'visible', 'isEdit', 'dataId'],
+    props: ['visible', 'isEdit', 'info'],
     data() {
-      var validatePass = (rule, value, callback) => {
-        if (value === '') {
-          callback(new Error('请输入密码'));
-        } else {
-          if (this.ruleForm2.checkPass !== '') {
-            this.$refs.ruleForm2.validateField('checkPass');
-          }
-          callback();
-        }
-      };
-      var validatePass2 = (rule, value, callback) => {
-        if (value === '') {
-          callback(new Error('请再次输入密码'));
-        } else if (value !== this.ruleForm2.pass) {
-          callback(new Error('两次输入密码不一致!'));
-        } else {
-          callback();
-        }
-      };
       return {
-        title:"添加",
-        ruleForm2: {
-          pass: '',
-          checkPass: '',
-          age: ''
+        title: "添加",
+        data: {
+          user: '',
+          password: '',
+          type: ''
         },
-        options: [{
-          value: '选项1',
-          label: '超级管理员'
-        }],
-        rules2: {
-          pass: [{ validator: validatePass, trigger: 'blur' }],
-          checkPass: [{ validator: validatePass2, trigger: 'blur' }]
-        }
+        options: [
+          {
+            value: '0',
+            label: '超级管理员(所有)'
+          },
+          {
+            value: '4',
+            label: '客服岗(会员管理、寄售管理)'
+          },
+          {
+            value: '3',
+            label: '运营岗(商城管理、寄售挂哪里、数据分析)'
+          },
+          {
+            value: '2',
+            label: '出纳岗(提现)'
+          },
+          {
+            value: '1',
+            label: '会计岗(充值、订单管理)'
+          }
+        ],
       };
     },
-    created(){
-      if(this.isEdit == '1'){
-        this.title = '编辑'
-      }else if(this.isEdit == '2'){
+    created() {
+      if (this.isEdit == '1') {
+        this.title = '编辑';
+        this.data = this.info
+        console.log('管理员数据:',this.data);
+      } else if (this.isEdit == '2') {
         this.title = '查看'
       }
     },
@@ -88,15 +87,72 @@
       handleClose(done) {
         this.$emit('updateIsShow', false);
       },
-      submitForm(formName) {
-        this.$refs[formName].validate((valid) => {
-          if (valid) {
-            alert('submit!');
-          } else {
-            console.log('error submit!!');
-            return false;
-          }
-        });
+
+      submitForm(url) {
+        if(this.isEdit == 0){
+          this.$http({
+            url: '/admin/addAdmin',
+            method: 'POST',
+            data: this.data,
+            headers: {
+              'Content-Type': 'application/json;charset=UTF-8'
+            },
+            transformRequest: [function (data) {
+              let json = JSON.stringify(Qs.parse(data));
+              return json;
+            }]
+          }).then(data => {
+            console.log(data);
+            if (data.errCode == 0) {
+              Message({
+                showClose: true,
+                message: data.info,
+                type: 'success'
+              });
+              this.$emit('updateIsShow', false);
+              this.$emit('updateInfo');
+            } else if (data.errCode != 0) {
+              Message({
+                showClose: true,
+                message: data.info,
+                type: 'error'
+              });
+            }
+          }).catch(error => {
+            console.log(error);
+          })
+        }else {
+          this.$http({
+            url: '/admin/editAdmin',
+            method: 'POST',
+            data: this.data,
+            headers: {
+              'Content-Type': 'application/json;charset=UTF-8'
+            },
+            transformRequest: [function (data) {
+              let json = JSON.stringify(Qs.parse(data));
+              return json;
+            }]
+          }).then(data => {
+            console.log(data);
+            if (data.errCode == 0) {
+              Message({
+                showClose: true,
+                message: data.info,
+                type: 'success'
+              });
+              this.$emit('updateIsShow', false);
+            } else if (data.errCode != 0) {
+              Message({
+                showClose: true,
+                message: data.info,
+                type: 'error'
+              });
+            }
+          }).catch(error => {
+            console.log(error);
+          })
+        }
       },
       resetForm(formName) {
         this.$refs[formName].resetFields();

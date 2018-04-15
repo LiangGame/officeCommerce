@@ -2,13 +2,22 @@
   <div class="consignment_container">
     <div class="main">
       <el-row class="top" :gutter="10">
-        <el-col :span="6">
-          <span>关键字 : </span>
-          <el-input v-model="orderId" size="mini" placeholder="关键字"></el-input>
+        <el-col :span="7">
+          <span>用户ID : </span>
+          <el-input v-model="userID" size="mini" placeholder="用户ID"></el-input>
+          <el-button type="primary" icon="el-icon-search" size="mini" circle @click="showOperate"></el-button>
         </el-col>
-        <el-col :span="6">
-          <el-button type="primary" icon="el-icon-search" size="mini" circle></el-button>
-        </el-col>
+        <!--<el-col :span="7">-->
+        <!--<span>收货状态 : </span>-->
+        <!--<el-select v-model="type" size="mini" placeholder="请选择">-->
+        <!--<el-option-->
+        <!--v-for="item in options"-->
+        <!--:key="item.value"-->
+        <!--:label="item.label"-->
+        <!--:value="item.value">-->
+        <!--</el-option>-->
+        <!--</el-select>-->
+        <!--</el-col>-->
       </el-row>
       <div class="table_container">
         <el-table
@@ -17,40 +26,56 @@
           :height="listHeight"
           style="width: 100%">
           <el-table-column
-            prop="date"
-            label="编号"
-            align="center"
-            width="260">
-          </el-table-column>
-          <el-table-column
-            prop="name"
-            label="商品名称"
+            prop="id"
+            label="订单号"
             align="center">
           </el-table-column>
           <el-table-column
-            prop="address"
-            label="价格"
-            align="center"
-            width="150">
+            prop="userID"
+            label="用户姓名"
+            align="center">
           </el-table-column>
           <el-table-column
-            prop="address"
-            label="状态"
-            align="center"
-            width="150">
+            prop="cerateTime"
+            label="下单时间"
+            align="center">
           </el-table-column>
           <el-table-column
-            prop="address"
-            label="库存"
-            align="center"
-            width="150">
+            prop="count"
+            label="购买数量"
+            align="center">
           </el-table-column>
           <el-table-column
-            prop="address"
+            prop="totalPrice"
+            label="总金额"
+            align="center">
+          </el-table-column>
+          <el-table-column
+            prop="payTime"
+            label="付款时间"
+            align="center">
+          </el-table-column>
+          <el-table-column
+            prop="payMent"
+            label="支付方式"
+            align="center">
+          </el-table-column>
+          <el-table-column
+            prop="status"
+            label="订单状态"
+            align="center">
+          </el-table-column>
+          <!--<el-table-column
             label="操作"
             align="center"
-            width="300">
-          </el-table-column>
+            width="200">
+            <template slot-scope="scope">
+              &lt;!&ndash;<el-button type="success" size="small" @click="showOperate(scope.row.userID)">查看</el-button>&ndash;&gt;
+              <el-button type="primary" size="small" :disabled="scope.row.status == '已付款'"
+                         @click="confirmOrder(scope.row.id,scope.row.userID,scope.row.count,scope.row.goodID)">发货
+              </el-button>
+            </template>
+          </el-table-column>-->
         </el-table>
       </div>
       <!--分页-->
@@ -63,28 +88,103 @@
         layout="total,sizes, prev, pager, next"
         :total="totalCount">
       </el-pagination>
+      <!--弹窗-->
+      <el-dialog
+        title="查看订单详情"
+        :visible="visible"
+        width="1000px"
+        :closeOnClickModal="false"
+        :before-close="handleClose">
+
+        <!--  <el-row :gutter="20">
+            <el-col :span="12">
+              <el-col :span="12">商品名称</el-col>
+              <el-col :span="12">{{ruleForm.goodName}}</el-col>
+              <el-col :span="12">单价</el-col>
+              <el-col :span="12">{{ruleForm.price}}</el-col>
+              <el-col :span="12">数量</el-col>
+              <el-col :span="12">{{ruleForm.count}}</el-col>
+              <el-col :span="12">总价</el-col>
+              <el-col :span="12">{{ruleForm.totalPrice}}</el-col>
+              <el-col :span="12">商品图片</el-col>
+              <el-col :span="12">
+                <img :src="fileUrl+ruleForm.img" :alt="ruleForm.goodName">
+              </el-col>
+              &lt;!&ndash;<el-form-item label="商品名称" prop="goodName">&ndash;&gt;
+                &lt;!&ndash;<span class="good_info" v-text="ruleForm.goodName"></span>&ndash;&gt;
+                &lt;!&ndash;<el-input v-model="ruleForm.goodName"></el-input>&ndash;&gt;
+              &lt;!&ndash;</el-form-item>&ndash;&gt;
+              &lt;!&ndash;<el-form-item label="单价" prop="goodName">&ndash;&gt;
+                &lt;!&ndash;<span class="good_info" v-text="ruleForm.price"></span>&ndash;&gt;
+              &lt;!&ndash;</el-form-item>&ndash;&gt;
+              &lt;!&ndash;<el-form-item label="数量" prop="goodName">&ndash;&gt;
+                &lt;!&ndash;<span class="good_info">{{ruleForm.count}}</span>&ndash;&gt;
+              &lt;!&ndash;</el-form-item>&ndash;&gt;
+              &lt;!&ndash;<el-form-item label="总价" prop="goodName">&ndash;&gt;
+                &lt;!&ndash;<span class="good_info">{{ruleForm.totalPrice}}</span>&ndash;&gt;
+              &lt;!&ndash;</el-form-item>&ndash;&gt;
+              &lt;!&ndash;<el-form-item label="商品图片" prop="goodDescribe">&ndash;&gt;
+                &lt;!&ndash;<img :src="fileUrl+ruleForm.img" :alt="ruleForm.goodName">&ndash;&gt;
+              &lt;!&ndash;</el-form-item>&ndash;&gt;
+            </el-col>
+            <el-col :span="12">
+              &lt;!&ndash;<el-form-item label="用户名称" prop="goodName">&ndash;&gt;
+                &lt;!&ndash;<span class="good_info">{{ruleForm.userID}}</span>&ndash;&gt;
+              &lt;!&ndash;</el-form-item>&ndash;&gt;
+              &lt;!&ndash;<el-form-item label="下单时间" prop="goodName">&ndash;&gt;
+                &lt;!&ndash;<span class="good_info">{{ruleForm.cerateTime}}</span>&ndash;&gt;
+              &lt;!&ndash;</el-form-item>&ndash;&gt;
+              &lt;!&ndash;<el-form-item label="付款时间" prop="goodName">&ndash;&gt;
+                &lt;!&ndash;<span class="good_info">{{ruleForm.payTime}}</span>&ndash;&gt;
+              &lt;!&ndash;</el-form-item>&ndash;&gt;
+              &lt;!&ndash;<el-form-item label="支付方式" prop="goodName">&ndash;&gt;
+                &lt;!&ndash;<span class="good_info">{{ruleForm.payMent}}</span>&ndash;&gt;
+              &lt;!&ndash;</el-form-item>&ndash;&gt;
+              &lt;!&ndash;<el-form-item label="订单状态" prop="goodName">&ndash;&gt;
+                &lt;!&ndash;<span class="good_info">{{ruleForm.status}}</span>&ndash;&gt;
+              &lt;!&ndash;</el-form-item>&ndash;&gt;
+
+
+            </el-col>
+          </el-row>-->
+        <!--</el-form>-->
+      </el-dialog>
     </div>
   </div>
 </template>
 
 <script>
-  import {getWinHeight} from '@/common/common'
+  import {MessageBox, Message} from 'element-ui';
+  import {getWinHeight, timestampToTime,fileUrl} from '@/common/common'
+
   export default {
-    name: "consignment",
+    name: "index",
     data() {
       return {
+        fileUrl:fileUrl,
         listHeight: this.getWinHeight() - 180,
-        orderId: '',
+        userID: '',
+        options: [{
+          value: '0',
+          label: '已付款'
+        }, {
+          value: '1',
+          label: '已发货'
+        }],
         type: '0',
         tableData: [],
         // 分页
         currentPage: 1,
         pageCount: 10,
         totalCount: 0,
+        //弹窗
+        visible: false,
+        ruleForm: {},
       }
     },
     methods: {
       getWinHeight: getWinHeight,
+      timestampToTime: timestampToTime,
       /* 分页 */
       handleCurrentChange(val) {
         this.currentPage = val;  // 当前页数
@@ -94,6 +194,120 @@
         this.pageCount = val; // 每页条数
         this.loadData(this.datePicker);
       },
+      //查看订单详情
+      showOperate() {
+        if (this.userID) {
+          this.$http({
+            url: "/order/getListAdminByUserID",
+            method: "GET",
+            params: {userID: this.userID}
+          }).then(data => {
+            console.log(data);
+            if (data.errCode == 0) {
+              this.tableData = data.info;
+              if (this.ruleForm.status == 0) {
+                this.ruleForm.status = '未支付'
+              } else if (this.ruleForm.status == 1) {
+                this.ruleForm.status = '财务未确认'
+              } else if (this.ruleForm.status == 2) {
+                this.ruleForm.status = '已付款'
+              } else if (this.ruleForm.status == 3) {
+                this.ruleForm.status = '已返第一次佣金'
+              } else if (this.ruleForm.status == 4) {
+                this.ruleForm.status = '已返全部佣金'
+              }
+              if (this.ruleForm.payMent == 1) {
+                this.ruleForm.payMent = '支付宝'
+              } else if (this.ruleForm.payMent == 2) {
+                this.ruleForm.payMent = '微信'
+              } else if (this.ruleForm.payMent == 3) {
+                this.ruleForm.payMent = '银行卡'
+              } else if (this.ruleForm.payMent == 4) {
+                this.ruleForm.payMent = '余额'
+              }
+            }
+          }).catch(error => {
+          })
+        }else {
+          this.loadData();
+        }
+      },
+      //发货
+      confirmOrder(orderID, userID, count, goodID) {
+        this.$http({
+          url: "/order/confirmOrder",
+          method: "GET",
+          params: {orderID: orderID, userID: userID, count: count, goodID: goodID}
+        }).then(data => {
+          console.log(data);
+          if (data.errCode == 0) {
+            Message({
+              showClose: true,
+              message: data.info,
+              type: 'success'
+            });
+            this.loadData();
+          } else {
+            Message({
+              showClose: true,
+              message: data.info,
+              type: 'error'
+            });
+          }
+        }).catch(error => {
+        })
+      },
+      //关闭弹窗
+      handleClose(done) {
+        this.visible = false;
+      },
+      //获取订单列表
+      loadData() {
+        this.$http({
+          url: "/order/getListAdmin",
+          method: "GET",
+          params: {}
+        }).then(data => {
+          console.log(data);
+          if (data.errCode == 0) {
+            this.tableData = data.info;
+            this.tableData.map(item => {
+              item.cerateTime = this.timestampToTime(item.cerateTime)
+              item.payTime = this.timestampToTime(item.payTime)
+              if (item.status == 0) {
+                item.status = '未支付'
+              } else if (item.status == 1) {
+                item.status = '财务未确认'
+              } else if (item.status == 2) {
+                item.status = '已付款'
+              } else if (item.status == 3) {
+                item.status = '已返第一次佣金'
+              } else if (item.status == 4) {
+                item.status = '已返全部佣金'
+              }
+              if (item.payMent == 1) {
+                item.payMent = '支付宝'
+              } else if (item.payMent == 2) {
+                item.payMent = '微信'
+              } else if (item.payMent == 3) {
+                item.payMent = '银行卡'
+              } else if (item.payMent == 4) {
+                item.payMent = '余额'
+              }
+            })
+          } else {
+            Message({
+              showClose: true,
+              message: data.info,
+              type: 'error'
+            });
+          }
+        }).catch(error => {
+        })
+      }
+    },
+    created() {
+      this.loadData();
     }
   }
 </script>
@@ -135,6 +349,9 @@
               color: #333;
             }
           }
+          /*.el-button--small {*/
+          /*padding: 4px 6px;*/
+          /*}*/
         }
       }
     }

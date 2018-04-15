@@ -144,6 +144,9 @@
             }
           }
         }
+        .el-table__body-wrapper{
+          overflow-x: hidden;
+        }
       }
     }
   }

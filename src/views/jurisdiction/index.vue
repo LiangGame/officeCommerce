@@ -20,18 +20,18 @@
           :height="listHeight"
           style="width: 100%">
           <el-table-column
-            prop="date"
+            prop="id"
             label="编号"
             align="center"
             width="260">
           </el-table-column>
           <el-table-column
-            prop="name"
+            prop="user"
             label="管理员名称"
             align="center">
           </el-table-column>
           <el-table-column
-            prop="address"
+            prop="type"
             label="权限等级"
             align="center">
           </el-table-column>
@@ -40,8 +40,8 @@
             label="操作"
             align="center">
             <template slot-scope="scope">
-              <buttons @look="operate(scope.row.ID,2)" @edit="operate(scope.row.ID,1)"
-                       @delete="del(scope.row.ID)"/>
+              <buttons @edit="operate(scope.row,1)"
+                       @delete="del(scope.row.user)"/>
             </template>
           </el-table-column>
         </el-table>
@@ -58,12 +58,13 @@
       </el-pagination>
     </div>
     <!--操作弹窗-->
-    <jurisdiction-operate v-if="isShowOperate" :visible="isShowOperate" :isEdit="isEdit" :ID="ID"
-                  @updateIsShow="val => isShowOperate = val" @updateInfo="loadData"/>
+    <jurisdiction-operate v-if="isShowOperate" :visible="isShowOperate" :isEdit="isEdit" :info="info"
+                          @updateIsShow="val => isShowOperate = val" @updateInfo="loadData"/>
   </div>
 </template>
 
 <script>
+  import Qs from 'qs';
   import {getWinHeight} from '@/common/common'
   import {MessageBox, Message} from 'element-ui';
   import jurisdictionOperate from './operate/jurisdictionOperate'
@@ -71,13 +72,14 @@
 
   export default {
     name: "jurisdiction",
-    components: {jurisdictionOperate,Buttons},
+    components: {jurisdictionOperate, Buttons},
     data() {
       return {
         listHeight: this.getWinHeight() - 180,
         orderId: '',
+        info: null,
         type: '0',
-        tableData: [{ID:1}],
+        tableData: [{ID: 1}],
         isEdit: '0',//0是添加，1是编辑,2是查看
         isShowOperate: false,
         // 分页
@@ -98,12 +100,46 @@
         this.loadData(this.datePicker);
       },
       loadData() {
-
+        this.$http({
+          url: "/admin/getAdmin",
+          method: 'GET',
+          // data:{user:id},
+          headers: {
+            'Content-Type': 'application/json;charset=UTF-8'
+          },
+          transformRequest: [function (data) {
+            let json = JSON.stringify(Qs.parse(data));
+            return json;
+          }]
+        }).then(data => {
+          if(data.errCode == 0){
+            this.tableData = data.info
+            this.tableData.map(item => {
+              if(item.type == 0){
+                item.type = '超级管理员(所有)';
+              }else if(item.type == 1){
+                item.type = '会计岗(充值、订单管理)';
+              }else if(item.type == 2){
+                item.type = '出纳岗(提现)';
+              }else if(item.type == 3){
+                item.type = '运营岗(商城管理、寄售挂哪里、数据分析)';
+              }else if(item.type == 4){
+                item.type = '客服岗(会员管理、寄售管理)';
+              }
+            })
+          }
+        }).catch(err => {
+          Message({
+            showClose: true,
+            message: '请求失败!',
+            type: 'error'
+          });
+        })
       },
-      operate(id,type) {
+      operate(info, type) {
         this.isShowOperate = true;
         this.isEdit = type;
-        this.ID = id;
+        this.info = info;
       },
       del(id) {
         MessageBox({
@@ -116,15 +152,31 @@
             if (action === 'confirm') {
               done();
               this.$http({
-                url: "",
-                method: 'DELETE',
+                url: "/admin/delAdmin",
+                method: 'POST',
+                data:{user:id},
+                headers: {
+                  'Content-Type': 'application/json;charset=UTF-8'
+                },
+                transformRequest: [function (data) {
+                  let json = JSON.stringify(Qs.parse(data));
+                  return json;
+                }]
               }).then(data => {
-                this.loadData(this.datePicker);
-                Message({
-                  showClose: true,
-                  message: '删除成功!',
-                  type: 'success'
-                });
+                if(data.errCode == 0){
+                  this.loadData();
+                  Message({
+                    showClose: true,
+                    message: data.info,
+                    type: 'success'
+                  });
+                }else {
+                  Message({
+                    showClose: true,
+                    message: data.info,
+                    type: 'error'
+                  });
+                }
               }).catch(err => {
                 Message({
                   showClose: true,
@@ -140,6 +192,9 @@
           }
         });
       }
+    },
+    created(){
+      this.loadData();
     }
   }
 </script>
@@ -173,7 +228,7 @@
           display: inline-block;
           width: 79%;
         }
-        .el-button--mini, .el-button--mini.is-round{
+        .el-button--mini, .el-button--mini.is-round {
           padding: 6px 10px;
         }
       }

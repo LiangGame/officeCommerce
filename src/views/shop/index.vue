@@ -78,7 +78,7 @@
             width="300">
             <template slot-scope="scope">
               <buttons @edit="operate(scope.row,1)"
-                       @delete="del(scope.row.ID)"/>
+                       @delete="del(scope.row.goodID)"/>
             </template>
           </el-table-column>
         </el-table>
@@ -101,6 +101,7 @@
 </template>
 
 <script>
+  import Qs from 'qs';
   import {getWinHeight,fileUrl} from '@/common/common'
   import {MessageBox, Message} from 'element-ui';
   import shopOperate from './operate/shopOperate'
@@ -168,7 +169,14 @@
               this.$http({
                 url: "/goods/delGoods",
                 method: 'POST',
-                data:{id:id}
+                data:{id:id},
+                headers: {
+                  'Content-Type': 'application/json;charset=UTF-8'
+                },
+                transformRequest: [function (data) {
+                  let json = JSON.stringify(Qs.parse(data));
+                  return json;
+                }]
               }).then(data => {
                 if(data.errCode == 0){
                   this.loadData();
@@ -188,7 +196,7 @@
               }).catch(err => {
                 Message({
                   showClose: true,
-                  message: '删除失败!',
+                  message: '网络错误',
                   type: 'error'
                 });
               })
