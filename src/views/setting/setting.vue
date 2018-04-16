@@ -46,6 +46,9 @@
           <el-input v-model="payMents.cardNub"></el-input>
         </el-form-item>
         <el-form-item label="微信："></el-form-item>
+        <el-form-item label="户名">
+          <el-input v-model="payMents.weixinname"></el-input>
+        </el-form-item>
         <el-form-item>
           <el-upload
             class="upload-demo"
@@ -66,6 +69,9 @@
           </el-upload>
         </el-form-item>
         <el-form-item label="支付宝："></el-form-item>
+        <el-form-item label="户名">
+          <el-input v-model="payMents.zhifubaoname"></el-input>
+        </el-form-item>
         <el-form-item>
           <el-upload
             class="upload-demo"
@@ -96,22 +102,22 @@
 <script>
   import Qs from 'qs';
   import {MessageBox, Message} from 'element-ui';
-  import {uploadUrl,fileUrl} from "@/common/common";
+  import {uploadUrl, fileUrl} from "@/common/common";
 
   export default {
     name: "setting",
     data() {
       return {
         uploadUrl: uploadUrl,
-        fileUrl:fileUrl,
+        fileUrl: fileUrl,
         payMent: {},
         visible: false,
-        payMents:{
-          zhifubao:'',
-          weixin:''
+        payMents: {
+          zhifubao: '',
+          weixin: ''
         },
-        apliay:[],
-        weChat:[],
+        apliay: [],
+        weChat: [],
       }
     },
     methods: {
@@ -130,8 +136,8 @@
           if (data.errCode == 0) {
             this.payMent = data.info;
             this.payMents = data.info;
-            this.apliay.push({name:data.info.zhifubao,url:data.info.zhifubao});
-            this.weChat.push({name:data.info.weixin,url:data.info.weixin})
+            this.apliay.push({name: data.info.zhifubao, url: this.fileUrl + data.info.zhifubao});
+            this.weChat.push({name: data.info.weixin, url: this.fileUrl + data.info.weixin})
           } else {
             Message({
               showClose: true,
@@ -142,7 +148,7 @@
         })
       },
       //修改支付方式
-      submitForm(){
+      submitForm() {
         this.$http({
           url: "/config/editPayMent",
           method: "POST",
@@ -155,14 +161,14 @@
             return json;
           }]
         }).then(data => {
-          if(data.errCode == 0){
+          if (data.errCode == 0) {
             Message({
               showClose: true,
               message: data.info,
               type: 'success'
             });
             this.visible = false;
-          }else {
+          } else {
             Message({
               showClose: true,
               message: data.info,
@@ -181,12 +187,12 @@
         this.weChat = [];
       },
       //上传成功
-      apliaySuccessFile(response){
+      apliaySuccessFile(response) {
         console.log(response);
-        if(response.errCode == 0){
-          this.apliay.push({name:response.info,url:response.info});
+        if (response.errCode == 0) {
+          this.apliay[0] = {name: response.info, url: this.fileUrl + response.info};
           this.payMents.zhifubao = response.info;
-        }else {
+        } else {
           Message({
             showClose: true,
             message: response.info,
@@ -194,12 +200,12 @@
           });
         }
       },
-      weChatSuccessFile(response){
+      weChatSuccessFile(response) {
         console.log(response);
-        if(response.errCode == 0){
-          this.weChat.push({name:response.info,url:response.info});
+        if (response.errCode == 0) {
+          this.weChat[0] = {name: response.info, url: this.fileUrl + response.info};
           this.payMents.weixin = response.info;
-        }else {
+        } else {
           Message({
             showClose: true,
             message: response.info,
@@ -209,7 +215,7 @@
       },
       //上传文件回调
       handlePreview(file) {
-        console.log(174,file);
+        console.log(174, file);
       },
       //上传文件
       apliaySubmitUpload() {
@@ -265,16 +271,16 @@
           line-height: 35px;
           padding-left: 2em;
         }
-        .img_container{
+        .img_container {
           padding-left: 25px;
-          img{
+          img {
             width: 250px;
             /*height: 100%;*/
           }
         }
       }
     }
-    .el-dialog__body{
+    .el-dialog__body {
       max-height: 450px;
       overflow-y: auto;
     }
