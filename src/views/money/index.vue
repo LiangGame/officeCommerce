@@ -61,7 +61,8 @@
                 align="center">
                 <template slot-scope="scope">
                   <el-button type="primary" size="small" :disabled="scope.row.status == 1"
-                             @click="comfirmRecharge(scope.row.id)">充值
+                             @click="comfirmRecharge(scope.row.id)">
+                    {{scope.row.status == 1 ? '已打款':'打款'}}
                   </el-button>
                 </template>
               </el-table-column>
@@ -141,7 +142,8 @@
                 align="center">
                 <template slot-scope="scope">
                   <el-button type="primary" size="small" :disabled="scope.row.status == 1"
-                             @click="comfirmWithdrawals(scope.row.id)">打款
+                             @click="comfirmWithdrawals(scope.row.id)">
+                    {{scope.row.status == 1 ? '已打款':'打款'}}
                   </el-button>
                 </template>
               </el-table-column>
