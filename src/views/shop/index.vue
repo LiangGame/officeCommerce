@@ -20,16 +20,14 @@
           :height="listHeight"
           style="width: 100%">
           <el-table-column
-            prop="id"
+            prop="goodID"
             label="编号"
-            align="center"
-            width="80">
+            align="center">
           </el-table-column>
           <el-table-column
             prop="img"
             label="图片"
-            align="center"
-            width="150">
+            align="center">
             <template slot-scope="scope">
               <img :src="fileUrl+scope.row.img" :alt="scope.row.goodName" width="120" height="120">
               <!--<img src="https://ss0.bdstatic.com/6ONWsjip0QIZ8tyhnq/it/u=3618554304,2887917621&fm=77&w_h=121_75&cs=2820658166,1330608299"-->
@@ -50,32 +48,27 @@
           <el-table-column
             prop="price"
             label="价格"
-            align="center"
-            width="80">
+            align="center">
           </el-table-column>
           <el-table-column
             prop="rewardTotal"
             label="一级佣金"
-            align="center"
-            width="110">
+            align="center">
           </el-table-column>
           <el-table-column
             prop="rewardSecond"
             label="二级佣金"
-            align="center"
-            width="110">
+            align="center">
           </el-table-column>
           <el-table-column
             prop="max"
             label="最大购买数量"
-            align="center"
-            width="110">
+            align="center">
           </el-table-column>
           <el-table-column
             prop="address"
             label="操作"
-            align="center"
-            width="300">
+            align="center">
             <template slot-scope="scope">
               <buttons @edit="operate(scope.row,1)"
                        @delete="del(scope.row.goodID)"/>

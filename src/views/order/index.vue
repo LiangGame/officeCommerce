@@ -2,22 +2,32 @@
   <div class="home_container">
     <div class="main">
       <el-row class="top" :gutter="10">
-        <el-col :span="7">
+        <el-col :span="5">
           <span>用户ID : </span>
           <el-input v-model="userID" size="mini" placeholder="用户ID"></el-input>
           <el-button type="primary" icon="el-icon-search" size="mini" circle @click="showOperate"></el-button>
         </el-col>
-        <!--<el-col :span="7">-->
-          <!--<span>收货状态 : </span>-->
-          <!--<el-select v-model="type" size="mini" placeholder="请选择">-->
-            <!--<el-option-->
-              <!--v-for="item in options"-->
-              <!--:key="item.value"-->
-              <!--:label="item.label"-->
-              <!--:value="item.value">-->
-            <!--</el-option>-->
-          <!--</el-select>-->
-        <!--</el-col>-->
+        <el-col :span="12">
+          <span>订单状态 : </span>
+          <el-select v-model="status" size="mini" placeholder="请选择" multiple collapse-tags class="filter">
+            <el-option
+              v-for="item in payMents"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+          <span>支付方式 : </span>
+          <el-select v-model="payMent" size="mini" placeholder="请选择" multiple collapse-tags class="filter">
+            <el-option
+              v-for="item in status1"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+          <el-button type="primary" icon="el-icon-search" size="mini" @click="loadData">筛选</el-button>
+        </el-col>
       </el-row>
       <div class="table_container">
         <el-table
@@ -67,8 +77,7 @@
           </el-table-column>
           <el-table-column
             label="操作"
-            align="center"
-            width="200">
+            align="center">
             <template slot-scope="scope">
               <!--<el-button type="success" size="small" @click="showOperate(scope.row.userID)">查看</el-button>-->
               <el-button type="primary" size="small" :disabled="scope.row.status == '已付款'"
@@ -154,6 +163,7 @@
 </template>
 
 <script>
+  import Qs from 'qs';
   import {MessageBox, Message} from 'element-ui';
   import {getWinHeight, timestampToTime,fileUrl} from '@/common/common'
 
@@ -164,18 +174,43 @@
         fileUrl:fileUrl,
         listHeight: this.getWinHeight() - 180,
         userID: '',
-        options: [{
-          value: '0',
-          label: '已付款'
-        }, {
-          value: '1',
-          label: '已发货'
-        }],
         type: '0',
         tableData: [],
+        //筛选条件
+        payMent:[],
+        status:[],
+        payMents: [{
+          value: 0,
+          label: '未支付'
+        }, {
+          value: 1,
+          label: '财务未确认'
+        }, {
+          value: 2,
+          label: '已付款'
+        }, {
+          value: 3,
+          label: '已返第一次佣金'
+        }, {
+          value: 4,
+          label: '已返全部佣金'
+        }],
+        status1: [{
+          value: 1,
+          label: '支付宝'
+        }, {
+          value: 2,
+          label: '微信'
+        }, {
+          value: 3,
+          label: '银行卡'
+        }, {
+          value: 4,
+          label: '余额'
+        }],
         // 分页
         currentPage: 1,
-        pageCount: 10,
+        pageCount: 50,
         totalCount: 0,
         //弹窗
         visible: false,
@@ -263,14 +298,25 @@
       },
       //获取订单列表
       loadData() {
+        const data = {page:this.currentPage,pageSize:this.pageCount,payMent:this.payMent,status:this.status};
         this.$http({
           url: "/order/getListAdmin",
-          method: "GET",
-          params: {}
+          method: "POST",
+          data: data,
+          headers: {
+            'Content-Type': 'application/json;charset=UTF-8'
+          },
+          transformRequest: [function (data) {
+            let _data = Qs.parse(data);
+            let json = JSON.stringify(_data);
+            console.log(_data);
+            return json;
+          }]
         }).then(data => {
           console.log(data);
           if (data.errCode == 0) {
-            this.tableData = data.info;
+            this.totalCount = data.info.count;
+            this.tableData = data.info.data;
             this.tableData.map(item => {
               item.cerateTime = this.timestampToTime(item.cerateTime)
               item.payTime = this.timestampToTime(item.payTime)
@@ -339,7 +385,13 @@
         }
         .el-input {
           display: inline-block;
-          width: 79%;
+          width: 70%;
+        }
+        .filter{
+          .el-input {
+            display: inline-block;
+            width: 100%;
+          }
         }
       }
       .table_container {

@@ -22,8 +22,7 @@
               <el-table-column
                 prop="id"
                 label="编号"
-                align="center"
-                width="120">
+                align="center">
               </el-table-column>
               <el-table-column
                 prop="userID"
@@ -31,15 +30,15 @@
                 align="center">
               </el-table-column>
               <el-table-column
-                prop="time"
                 label="充值时间"
-                align="center"
-                width="250">
+                align="center">
+                <template slot-scope="scope">
+                  {{timestampToTime(scope.row.time)}}
+                </template>
               </el-table-column>
               <el-table-column
                 label="支付方式"
-                align="center"
-                width="250">
+                align="center">
                 <template slot-scope="scope">
                   {{scope.row.payMent | Ment}}
                 </template>
@@ -47,13 +46,11 @@
               <el-table-column
                 prop="money"
                 label="充值金额"
-                align="center"
-                width="200">
+                align="center">
               </el-table-column>
               <el-table-column
                 label="充值状态"
-                align="center"
-                width="220">
+                align="center">
                 <template slot-scope="scope">
                   {{scope.row.status | status}}
                 </template>
@@ -61,8 +58,7 @@
               <el-table-column
                 prop="address"
                 label="操作"
-                align="center"
-                width="220">
+                align="center">
                 <template slot-scope="scope">
                   <el-button type="primary" size="small" :disabled="scope.row.status == 1" @click="comfirmRecharge(scope.row.id)">充值</el-button>
                 </template>
@@ -100,46 +96,32 @@
               <el-table-column
                 prop="id"
                 label="编号"
-                align="center"
-                width="120">
-              </el-table-column>
-              <el-table-column
-                prop="userID"
-                label="用户ID"
                 align="center">
               </el-table-column>
               <el-table-column
-                prop="time"
-                label="提现时间"
-                align="center"
-                width="250">
+                prop="creditCard"
+                label="银行卡"
+                align="center">
               </el-table-column>
               <el-table-column
-                label="支付方式"
-                align="center"
-                width="250">
-                <template slot-scope="scope">
-                  {{scope.row.payMent | Ment}}
-                </template>
+                prop="bankname"
+                label="开户行"
+                align="center">
+              </el-table-column>
+              <el-table-column
+                prop="realname"
+                label="持卡人姓名"
+                align="center">
               </el-table-column>
               <el-table-column
                 prop="money"
-                label="提现金额"
-                align="center"
-                width="200">
-              </el-table-column>
-              <el-table-column
-                label="提现状态"
+                label="打款全额"
                 align="center">
-                <template slot-scope="scope">
-                  {{scope.row.status | status}}
-                </template>
               </el-table-column>
               <el-table-column
                 prop="address"
                 label="操作"
-                align="center"
-                width="220">
+                align="center">
                 <template slot-scope="scope">
                   <el-button type="primary" size="small" :disabled="scope.row.status == 1" @click="comfirmWithdrawals(scope.row.id)">打款</el-button>
                 </template>
@@ -164,7 +146,7 @@
 
 <script>
   import Qs from 'qs';
-  import {getWinHeight} from '@/common/common'
+  import {getWinHeight,timestampToTime} from '@/common/common'
   import {MessageBox, Message} from 'element-ui';
 
   export default {
@@ -179,12 +161,13 @@
         level: this.Cookie.get('level'),
         // 分页
         currentPage: 1,
-        pageCount: 10,
+        pageCount: 50,
         totalCount: 0,
       }
     },
     methods: {
       getWinHeight: getWinHeight,
+      timestampToTime:timestampToTime,
       /* 分页 */
       handleCurrentChange(val) {
         this.currentPage = val;  // 当前页数
@@ -210,12 +193,21 @@
       getRechargeList() {
         this.$http({
           url: "/order/getRechargeList",
-          method: 'GET',
-          // data:{user:id},
+          method: 'POST',
+          data:{page:this.currentPage,pageSize:this.pageCount},
+          headers: {
+            'Content-Type': 'application/json;charset=UTF-8'
+          },
+          transformRequest: [function (data) {
+            let _data = Qs.parse(data);
+            let json = JSON.stringify(_data);
+            return json;
+          }]
         }).then(data => {
           console.log(data);
           if (data.errCode == 0) {
-            this.tableData = data.info
+            this.totalCount = data.info.count;
+            this.tableData = data.info.data
           } else {
             Message({
               showClose: true,
@@ -235,13 +227,21 @@
       getWithdrawals() {
         this.$http({
           url: "/order/getWithdrawals",
-          method: 'GET',
-          // data:{user:id},
+          method: 'POST',
+          data:{page:this.currentPage,pageSize:this.pageCount},
+          headers: {
+            'Content-Type': 'application/json;charset=UTF-8'
+          },
+          transformRequest: [function (data) {
+            let _data = Qs.parse(data);
+            let json = JSON.stringify(_data);
+            return json;
+          }]
         }).then(data => {
           console.log(data);
           if (data.errCode == 0) {
-            this.tableData = data.info
-
+            this.totalCount = data.info.count;
+            this.tableData = data.info.data
           } else {
             Message({
               showClose: true,

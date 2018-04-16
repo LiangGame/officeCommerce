@@ -22,8 +22,7 @@
           <el-table-column
             prop="id"
             label="编号"
-            align="center"
-            width="260">
+            align="center">
           </el-table-column>
           <el-table-column
             prop="user"

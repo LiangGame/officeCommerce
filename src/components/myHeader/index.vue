@@ -22,6 +22,9 @@
       <li v-if="level == 0 || level == 3">
         <router-link to='/dataAnalysis' active-class="active-nav">数据分析</router-link>
       </li>
+      <li v-if="level == 0">
+        <router-link to='/setting' active-class="active-nav">设置</router-link>
+      </li>
       <li class="exit" @click="esc">
         <div>退出系统</div>
       </li>

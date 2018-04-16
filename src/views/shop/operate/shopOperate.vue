@@ -36,6 +36,16 @@
                   <el-input v-model="ruleForm.price"></el-input>
                 </el-form-item>
               </el-col>
+              <el-col :span="12">
+                <el-form-item label="第一次代售回款" prop="price" label-width="150px">
+                  <el-input v-model="ruleForm.first"></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="第二次代售回款" prop="price" label-width="150px">
+                  <el-input v-model="ruleForm.second"></el-input>
+                </el-form-item>
+              </el-col>
             </el-row>
             <el-form-item>
               <el-upload
@@ -87,13 +97,14 @@
           max: '',
           img: '',
           price: '',
+          first:'',
+          second:''
         },
         fileList:[],
         rules: {
           goodName: [{required: true, message: '请输入商品名称', trigger: 'blur'}, {
             min: 3,
-            max: 5,
-            message: '长度在 3 到 5 个字符',
+            message: '名称过短!',
             trigger: 'blur'
           }],
           goodDescribe: [{required: true, message: '请填写商品描述', trigger: 'blur'}],

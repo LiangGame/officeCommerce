@@ -154,6 +154,7 @@
 </template>
 
 <script>
+  import Qs from 'qs';
   import {MessageBox, Message} from 'element-ui';
   import {getWinHeight, timestampToTime,fileUrl} from '@/common/common'
 
@@ -263,14 +264,24 @@
       },
       //获取订单列表
       loadData() {
+        const data = {page:this.currentPage,pageSize:this.pageCount,payMent:this.payMent,status:this.status};
         this.$http({
           url: "/order/getListAdmin",
-          method: "GET",
-          params: {}
+          method: "POST",
+          data: data,
+          headers: {
+            'Content-Type': 'application/json;charset=UTF-8'
+          },
+          transformRequest: [function (data) {
+            let _data = Qs.parse(data);
+            let json = JSON.stringify(_data);
+            return json;
+          }]
         }).then(data => {
           console.log(data);
           if (data.errCode == 0) {
-            this.tableData = data.info;
+            this.totalCount = data.info.count;
+            this.tableData = data.info.data;
             this.tableData.map(item => {
               item.cerateTime = this.timestampToTime(item.cerateTime)
               item.payTime = this.timestampToTime(item.payTime)

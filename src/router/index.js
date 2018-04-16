@@ -19,7 +19,8 @@ var routes = [
       {path: '/consignment', name: '寄售管理', component: _import('consignment/index')},
       {path: '/vip', name: '会员管理', component: _import('vip/index')},
       {path: '/jurisdiction', name: '权限管理', component: _import('jurisdiction/index')},
-      {path: '/dataAnalysis', name: '数据分析', component: _import('dataAnalysis/index')}
+      {path: '/dataAnalysis', name: '数据分析', component: _import('dataAnalysis/index')},
+      {path: '/setting', name: '设置', component: _import('setting/setting')}
     ],
     beforeEnter: (to, from, next) => {
       if (to.path.indexOf('/login') == -1 && Cookie.get('level') == undefined) {
