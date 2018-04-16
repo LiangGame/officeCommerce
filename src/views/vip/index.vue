@@ -147,6 +147,55 @@
         </el-table-column>
       </el-table>
     </el-dialog>
+    <!--弹窗-->
+    <el-dialog
+      title="会员详情"
+      :visible="showVipInfo"
+      width="500px"
+      :closeOnClickModal="false"
+      :before-close="handleClose"
+      class="vipInfo">
+      <el-row>
+        <el-col :span="4">会员ID：</el-col>
+        <el-col :span="8">{{VipInfo.id}}</el-col>
+        <el-col :span="4">姓名：</el-col>
+        <el-col :span="8">{{VipInfo.realName}}</el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="4">注册时间：</el-col>
+        <el-col :span="8">{{VipInfo.registTime}}</el-col>
+        <el-col :span="4">手机号：</el-col>
+        <el-col :span="8">{{VipInfo.phone}}</el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="4">余额：</el-col>
+        <el-col :span="8">{{VipInfo.balance}}</el-col>
+        <el-col :span="4">订单数量：</el-col>
+        <el-col :span="8">{{VipInfo.count}}</el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="4">上级ID：</el-col>
+        <el-col :span="8">{{VipInfo.chief}}</el-col>
+        <el-col :span="4">下级会员：</el-col>
+        <el-col :span="8">{{VipInfo.member}}个</el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="4">实名认证：</el-col>
+        <el-col :span="8">{{VipInfo.status}}</el-col>
+        <el-col :span="4">身份证号：</el-col>
+        <el-col :span="8">{{VipInfo.IDcard}}</el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="4">开户行：</el-col>
+        <el-col :span="8">{{VipInfo.bankname}}</el-col>
+        <el-col :span="4">银行卡号：</el-col>
+        <el-col :span="8">{{VipInfo.creditCard}}</el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="4">密码：</el-col>
+        <el-col :span="8">{{VipInfo.password}}</el-col>
+      </el-row>
+    </el-dialog>
   </div>
 </template>
 

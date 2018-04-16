@@ -16,13 +16,13 @@
         <li class="payMent_content">
           <div class="payMent_title">微信：</div>
           <div class="img_container">
-            <img :src="fileUrl+payMent.zhifubao" alt="微信">
+            <img :src="payMent.zhifubao ? fileUrl+payMent.zhifubao : ''" alt="微信">
           </div>
         </li>
         <li class="payMent_content">
           <div class="payMent_title">支付宝：</div>
           <div class="img_container">
-            <img :src="fileUrl+payMent.weixin" alt="支付宝">
+            <img :src="payMent.weixin ? fileUrl+payMent.weixin : ''" alt="支付宝">
           </div>
         </li>
       </ul>
@@ -269,7 +269,7 @@
           padding-left: 25px;
           img{
             width: 250px;
-            height: 100%;
+            /*height: 100%;*/
           }
         }
       }

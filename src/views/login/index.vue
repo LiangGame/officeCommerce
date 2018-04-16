@@ -4,6 +4,9 @@
     <div class="main">
       <!--<h1>电商后台管理系统</h1>-->
       <div class="loginForm">
+        <div class="logo">
+          <!--<img :src="require('@/assets/pic/logo-01.png')" width="100%" alt="">-->
+        </div>
         <el-form :model="loginForm" status-icon :rules="rules" ref="loginForm" label-width="100px"
                  class="demo-ruleForm">
           <el-form-item label="用户名" prop="user">
@@ -109,9 +112,15 @@
     }
     .main {
       .loginForm {
+        .logo{
+          height: 140px;
+          background: url("../../assets/pic/logo-01.png") no-repeat;
+          background-position: center;
+          background-size: cover;
+        }
         background: white;
         border-radius: 8px;
-        padding: 50px 30px 30px 30px;
+        padding: 10px 30px 30px 30px;
         box-shadow: 10px 10px 20px #cdcdcd;;
         width: 450px;
         position: absolute;

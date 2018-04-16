@@ -80,7 +80,7 @@
             align="center">
             <template slot-scope="scope">
               <!--<el-button type="success" size="small" @click="showOperate(scope.row.userID)">查看</el-button>-->
-              <el-button type="primary" size="small" :disabled="scope.row.status == '已付款'"
+              <el-button type="primary" size="small" :disabled="scope.row.status == '已付款'||scope.row.status != '财务未确认'"
                          @click="confirmOrder(scope.row.id,scope.row.userID,scope.row.count,scope.row.goodID)">发货
               </el-button>
             </template>

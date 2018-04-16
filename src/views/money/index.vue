@@ -314,6 +314,7 @@
       },
       //确认提现
       comfirmWithdrawals(id) {
+        let _this = this;
         this.$http({
           url: "/order/comfirmWithdrawals",
           method: 'POST',
@@ -327,7 +328,7 @@
           }]
         }).then(data => {
           if (data.errCode == 0) {
-            this.loadData();
+            _this.getRechargeList();
             Message({
               showClose: true,
               message: data.info,
@@ -340,12 +341,6 @@
               type: 'error'
             });
           }
-        }).catch(err => {
-          Message({
-            showClose: true,
-            message: '请求失败!',
-            type: 'error'
-          });
         })
       }
     },
