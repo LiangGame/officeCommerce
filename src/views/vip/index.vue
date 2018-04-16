@@ -27,9 +27,13 @@
             align="center">
           </el-table-column>
           <el-table-column
-            prop="balance"
             label="余额"
-            align="center">
+            align="center"
+            width="200">
+            <template slot-scope="scope">
+              <span style="display: inline-block;width: 100px">{{scope.row.balance}}</span>
+              <el-button type="success" size="small" @click="billInfo = true;getListAdminByUserID(scope.row.id)">查看</el-button>
+            </template>
           </el-table-column>
           <el-table-column
             prop="registTime"
@@ -53,8 +57,10 @@
           </el-table-column>
           <el-table-column
             label="操作"
-            align="center">
+            align="center"
+            width="335">
             <template slot-scope="scope">
+              <el-button type="success" size="small" @click="showVipInfo = true;VipInfo=scope.row">查看</el-button>
               <el-button type="primary" size="small" @click="visible = true;userID=scope.row.id">修改手机号</el-button>
               <el-button type="danger" size="small"
                          @click="resetUserStatus(scope.row.id)">重置实名认证
@@ -91,6 +97,56 @@
         </el-col>
       </el-row>
     </el-dialog>
+    <!--弹窗-->
+    <el-dialog
+      title="余额明细"
+      :visible="billInfo"
+      width="800px"
+      :closeOnClickModal="false"
+      :before-close="handleClose"
+      class="vipInfo">
+      <el-table
+        :data="billList"
+        border
+        height="400px"
+        style="width: 100%">
+        <el-table-column
+          prop="id"
+          label="编号"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="time"
+          label="交易时间"
+          align="center"
+          width="260">
+          <template slot-scope="scope">
+            {{timestampToTime(scope.row.time)}}
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="sum"
+          label="金额"
+          align="center">
+        </el-table-column>
+        <el-table-column
+          prop="payMent"
+          label="支付方式"
+          align="center">
+          <template slot-scope="scope">
+            {{scope.row.payMent | Ment}}
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="type"
+          label="余额变动类型"
+          align="center">
+          <template slot-scope="scope">
+            {{scope.row.type | status}}
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
   </div>
 </template>
 
@@ -115,6 +171,10 @@
         totalCount: 0,
         //弹窗
         visible: false,
+        showVipInfo: false,
+        billInfo:false,
+        billList:[],
+        VipInfo: {}
       }
     },
     methods: {
@@ -132,6 +192,8 @@
       //关闭弹窗
       handleClose(done) {
         this.visible = false;
+        this.showVipInfo = false;
+        this.billInfo = false;
       },
       loadData() {
         this.$http({
@@ -195,7 +257,7 @@
         })
       },
       //重置实名认证
-      resetUserStatus(userID){
+      resetUserStatus(userID) {
         MessageBox({
           title: '提示',
           message: `确定重置该记录？`,
@@ -233,10 +295,60 @@
             }
           }
         });
+      },
+      //获取指定用户的余额
+      getListAdminByUserID(id){
+        this.$http({
+          url: "/balance/getListAdminByUserID",
+          method: "GET",
+          params: {userID: id}
+        }).then(data => {
+          console.log(data);
+          if (data.errCode == 0) {
+            this.billList = data.info;
+          } else {
+            Message({
+              showClose: true,
+              message: data.info,
+              type: 'error'
+            });
+          }
+        })
       }
     },
     created() {
       this.loadData()
+    },
+    filters: {
+      Ment(value) {
+        var type = null;
+        if (value == 1) {
+          type = '支付宝'
+        } else if (value == 2) {
+          type = '微信'
+        } else if (value == 3) {
+          type = '银行卡'
+        } else if (value == 4) {
+          type = '余额'
+        }
+        return type;
+      },
+      status(value){
+        // 余额变动类型：1，购买。2，代售回款。3，提成。4，提现。5，充值
+        var status = null;
+        if(value == 1){
+          status = '购买'
+        }else if(value == 2) {
+          status = '代售回款'
+        }else if(value == 3) {
+          status = '提成'
+        }else if(value == 4) {
+          status = '提现'
+        }else if(value == 5) {
+          status = '充值'
+        }
+        return status
+      }
     }
   }
 </script>
@@ -281,6 +393,14 @@
         }
         .el-table__body-wrapper {
           overflow-x: hidden;
+        }
+      }
+    }
+    .vipInfo{
+      .el-row{
+        line-height: 35px;
+        .el-col{
+          height: 35px;
         }
       }
     }

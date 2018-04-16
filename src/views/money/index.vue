@@ -60,7 +60,9 @@
                 label="操作"
                 align="center">
                 <template slot-scope="scope">
-                  <el-button type="primary" size="small" :disabled="scope.row.status == 1" @click="comfirmRecharge(scope.row.id)">充值</el-button>
+                  <el-button type="primary" size="small" :disabled="scope.row.status == 1"
+                             @click="comfirmRecharge(scope.row.id)">充值
+                  </el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -99,6 +101,11 @@
                 align="center">
               </el-table-column>
               <el-table-column
+                prop="userID"
+                label="用户ID"
+                align="center">
+              </el-table-column>
+              <el-table-column
                 prop="creditCard"
                 label="银行卡"
                 align="center">
@@ -114,16 +121,28 @@
                 align="center">
               </el-table-column>
               <el-table-column
+                label="提现时间"
+                align="center">
+                <template slot-scope="scope">
+                  {{timestampToTime(scope.row.time)}}
+                </template>
+              </el-table-column>
+              <el-table-column
                 prop="money"
                 label="打款全额"
                 align="center">
+                <template slot-scope="scope">
+                  {{scope.row.money | str}}
+                </template>
               </el-table-column>
               <el-table-column
                 prop="address"
                 label="操作"
                 align="center">
                 <template slot-scope="scope">
-                  <el-button type="primary" size="small" :disabled="scope.row.status == 1" @click="comfirmWithdrawals(scope.row.id)">打款</el-button>
+                  <el-button type="primary" size="small" :disabled="scope.row.status == 1"
+                             @click="comfirmWithdrawals(scope.row.id)">打款
+                  </el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -146,7 +165,7 @@
 
 <script>
   import Qs from 'qs';
-  import {getWinHeight,timestampToTime} from '@/common/common'
+  import {getWinHeight, timestampToTime} from '@/common/common'
   import {MessageBox, Message} from 'element-ui';
 
   export default {
@@ -157,7 +176,7 @@
         activeName: 'first',
         orderId: '',
         type: '0',
-        tableData: [{id:1}],
+        tableData: [{id: 1}],
         level: this.Cookie.get('level'),
         // 分页
         currentPage: 1,
@@ -167,7 +186,7 @@
     },
     methods: {
       getWinHeight: getWinHeight,
-      timestampToTime:timestampToTime,
+      timestampToTime: timestampToTime,
       /* 分页 */
       handleCurrentChange(val) {
         this.currentPage = val;  // 当前页数
@@ -179,13 +198,13 @@
       },
       handleClick(tab, event) {
         console.log(tab);
-        if(tab){
+        if (tab) {
           if (tab.name == 'first') {
             this.getRechargeList()
           } else {
             this.getWithdrawals()
           }
-        }else {
+        } else {
           this.getRechargeList()
         }
       },
@@ -194,7 +213,7 @@
         this.$http({
           url: "/order/getRechargeList",
           method: 'POST',
-          data:{page:this.currentPage,pageSize:this.pageCount},
+          data: {page: this.currentPage, pageSize: this.pageCount},
           headers: {
             'Content-Type': 'application/json;charset=UTF-8'
           },
@@ -228,7 +247,7 @@
         this.$http({
           url: "/order/getWithdrawals",
           method: 'POST',
-          data:{page:this.currentPage,pageSize:this.pageCount},
+          data: {page: this.currentPage, pageSize: this.pageCount},
           headers: {
             'Content-Type': 'application/json;charset=UTF-8'
           },
@@ -258,11 +277,11 @@
         })
       },
       //确认充值
-      comfirmRecharge(id){
+      comfirmRecharge(id) {
         this.$http({
           url: "/order/comfirmRecharge",
           method: 'POST',
-          data:{orderID:id},
+          data: {orderID: id},
           headers: {
             'Content-Type': 'application/json;charset=UTF-8'
           },
@@ -271,14 +290,14 @@
             return json;
           }]
         }).then(data => {
-          if(data.errCode == 0){
+          if (data.errCode == 0) {
             this.loadData();
             Message({
               showClose: true,
               message: data.info,
               type: 'success'
             });
-          }else {
+          } else {
             Message({
               showClose: true,
               message: data.info,
@@ -294,11 +313,11 @@
         })
       },
       //确认提现
-      comfirmWithdrawals(id){
+      comfirmWithdrawals(id) {
         this.$http({
           url: "/order/comfirmWithdrawals",
           method: 'POST',
-          data:{orderID:id},
+          data: {orderID: id},
           headers: {
             'Content-Type': 'application/json;charset=UTF-8'
           },
@@ -307,14 +326,14 @@
             return json;
           }]
         }).then(data => {
-          if(data.errCode == 0){
+          if (data.errCode == 0) {
             this.loadData();
             Message({
               showClose: true,
               message: data.info,
               type: 'success'
             });
-          }else {
+          } else {
             Message({
               showClose: true,
               message: data.info,
@@ -339,11 +358,11 @@
       }
       this.handleClick();
     },
-    filters:{
+    filters: {
       Ment(value) {
         var type = null;
         if (value == 1) {
-           type = '支付宝'
+          type = '支付宝'
         } else if (value == 2) {
           type = '微信'
         } else if (value == 3) {
@@ -353,14 +372,23 @@
         }
         return type;
       },
-      status(value){
+      status(value) {
         var status = null;
-        if(value == 0){
+        if (value == 0) {
           status = '财务未确认'
-        }else {
+        } else {
           status = '财务已确认'
         }
         return status
+      },
+      str(value) {
+        if (value) {
+          if(value.indexOf('-')!=-1){
+            return value.split('-')[1];
+          }else {
+            return value
+          }
+        }
       }
     }
   }
