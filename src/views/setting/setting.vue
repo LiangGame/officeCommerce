@@ -91,6 +91,9 @@
             <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
           </el-upload>
         </el-form-item>
+        <el-form-item label="密码">
+          <el-input v-model="payMents.password" type="password"></el-input>
+        </el-form-item>
         <el-form-item label-width="0" align="center">
           <el-button type="primary" @click="submitForm()">提交</el-button>
         </el-form-item>
@@ -149,42 +152,44 @@
       },
       //修改支付方式
       submitForm() {
-        this.$http({
-          url: "/config/editPayMent",
-          method: "POST",
-          data: this.payMents,
-          headers: {
-            'Content-Type': 'application/json;charset=UTF-8'
-          },
-          transformRequest: [function (data) {
-            let json = JSON.stringify(Qs.parse(data));
-            return json;
-          }]
-        }).then(data => {
-          if (data.errCode == 0) {
-            Message({
-              showClose: true,
-              message: data.info,
-              type: 'success'
-            });
-            this.visible = false;
-          } else {
-            Message({
-              showClose: true,
-              message: data.info,
-              type: 'error'
-            });
-          }
-        })
+          this.$http({
+            url: "/config/editPayMent",
+            method: "POST",
+            data: this.payMents,
+            headers: {
+              'Content-Type': 'application/json;charset=UTF-8'
+            },
+            transformRequest: [function (data) {
+              let json = JSON.stringify(Qs.parse(data));
+              return json;
+            }]
+          }).then(data => {
+            if (data.errCode == 0) {
+              Message({
+                showClose: true,
+                message: data.info,
+                type: 'success'
+              });
+              this.visible = false;
+            } else {
+              Message({
+                showClose: true,
+                message: data.info,
+                type: 'error'
+              });
+            }
+          })
       },
       //删除文件
       apliayhandleRemove(file, fileList) {
         console.log(file, fileList);
         this.apliay = [];
+        this.zhifubao = '';
       },
       weChathandleRemove(file, fileList) {
         console.log(file, fileList);
         this.weChat = [];
+        this.weixin = '';        
       },
       //上传成功
       apliaySuccessFile(response) {

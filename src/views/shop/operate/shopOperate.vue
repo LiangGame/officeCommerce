@@ -17,12 +17,12 @@
             </el-form-item>
             <el-row>
               <el-col :span="6">
-                <el-form-item label="总提成" prop="rewardTotal">
+                <el-form-item label="总代言费" prop="rewardTotal">
                   <el-input v-model="ruleForm.rewardTotal"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="6">
-                <el-form-item label="二级提成" prop="rewardSecond">
+                <el-form-item label="二级代言费" prop="rewardSecond">
                   <el-input v-model="ruleForm.rewardSecond"></el-input>
                 </el-form-item>
               </el-col>
@@ -67,7 +67,7 @@
               </el-upload>
             </el-form-item>
             <el-form-item label-width="0" align="center">
-              <el-button type="primary" @click="submitForm('ruleForm')">保存</el-button>
+              <el-button type="primary" @click="submitForm('ruleForm')" :disabled="isOne">保存</el-button>
               <el-button @click="resetForm('ruleForm')">重置</el-button>
             </el-form-item>
           </el-col>
@@ -88,6 +88,7 @@
     data() {
       return {
         title: "添加",
+        isOne:false,
         uploadUrl: uploadUrl,
         ruleForm: {
           goodName: '',
@@ -108,8 +109,8 @@
             trigger: 'blur'
           }],
           goodDescribe: [{required: true, message: '请填写商品描述', trigger: 'blur'}],
-          rewardTotal: [{required: true, message: '请输入总提成', trigger: 'blur'}],
-          rewardSecond: [{required: true, message: '请输入二级提成', trigger: 'blur'}],
+          rewardTotal: [{required: true, message: '请输入总代言费', trigger: 'blur'}],
+          rewardSecond: [{required: true, message: '请输入二级代言费', trigger: 'blur'}],
           price: [{required: true, message: '请输入商品总价', trigger: 'blur'}],
           max: [{required: true, message: '请输入最多购买数量', trigger: 'blur'}]
         }
@@ -122,7 +123,7 @@
         this.title = '编辑';
         let imgList = fileUrl + this.info.img;
         console.log(imgList);
-        this.info.img = '';
+        // this.info.img = '';
         this.fileList.push({name:this.info.goodName,url:imgList})
         // this.info.img.push({name:this.info.goodName,url:imgList});
         this.ruleForm = this.info;
@@ -150,6 +151,7 @@
       },
       //提交数据
       submitData(url, type) {
+        this.isOne = true;
         this.$http({
           url: url,
           method: type,
@@ -163,6 +165,7 @@
           }]
         }).then(data => {
           console.log(data);
+          this.isOne = false;
           if (data.errCode == 0) {
             this.$emit('updateIsShow', false);
             this.$emit('updateInfo');
@@ -184,6 +187,8 @@
       //删除文件
       handleRemove(file, fileList) {
         console.log(file, fileList);
+        this.fileList = [];
+        this.ruleForm = '';
       },
       //上传成功
       successFile(response){
