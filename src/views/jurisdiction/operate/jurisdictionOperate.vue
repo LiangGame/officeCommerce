@@ -77,7 +77,18 @@
     created() {
       if (this.isEdit == '1') {
         this.title = '编辑';
-        this.data = this.info
+        this.data = this.info;
+        if(this.data.type == '超级管理员(所有)'){
+          this.data.type = '0';
+        }else if(this.data.type == '会计岗(充值、订单管理)'){
+          this.data.type = '1';
+        }else if(this.data.type == '出纳岗(提现)'){
+          this.data.type = '2';
+        }else if(this.data.type == '运营岗(商城管理、寄售管理、数据分析)'){
+          this.data.type = '3';
+        }else if(this.data.type == '客服岗(会员管理、寄售管理)'){
+          this.data.type = '4';
+        }
         console.log('管理员数据:',this.data);
       } else if (this.isEdit == '2') {
         this.title = '查看'
@@ -142,6 +153,7 @@
                 type: 'success'
               });
               this.$emit('updateIsShow', false);
+              this.$emit('updateInfo');
             } else if (data.errCode != 0) {
               Message({
                 showClose: true,

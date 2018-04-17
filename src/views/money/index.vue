@@ -330,19 +330,19 @@
                         }
                     }
         })
-        
+
       },
       //确认提现
       comfirmWithdrawals(id) {
         MessageBox({
                     title: '提示',
-                    message: `确认充值？`,
+                    message: `确认打款？`,
                     showCancelButton: true,
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     beforeClose: (action, instance, done) => {
                       if (action === 'confirm') {
-                        done();                        
+                        done();
                         let _this = this;
                         this.$http({
                           url: "/order/comfirmWithdrawals",

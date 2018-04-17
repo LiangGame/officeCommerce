@@ -10,6 +10,7 @@
           <el-button type="primary" icon="el-icon-search" size="mini" circle></el-button>
         </el-col>
         <el-col :span="12" style="text-align: right">
+          <el-button type="danger" size="mini" @click.native="visible = true">修改公告</el-button>
           <el-button type="danger" icon="el-icon-plus" size="mini" @click="operate(0,0)">添加</el-button>
         </el-col>
       </el-row>
@@ -90,6 +91,23 @@
     <!--操作弹窗-->
     <shop-operate v-if="isShowOperate" :visible="isShowOperate" :isEdit="isEdit" :info="info"
                   @updateIsShow="val => isShowOperate = val" @updateInfo="loadData"/>
+    <!--弹窗-->
+    <el-dialog
+      title="修改公告"
+      :visible="visible"
+      width="500px"
+      :closeOnClickModal="false"
+      :before-close="handleClose">
+      <el-row>
+        <el-col :span="4"><span style="line-height: 40px">公告：</span></el-col>
+        <el-col :span="20">
+          <el-input v-model="about" placeholder="公告"></el-input>
+        </el-col>
+        <el-col :span="24" align="center" style="margin-top: 25px">
+          <el-button type="primary" size="small" @click="editAbout">确认修改</el-button>
+        </el-col>
+      </el-row>
+    </el-dialog>
   </div>
 </template>
 
@@ -105,6 +123,8 @@
     components: {shopOperate, Buttons},
     data() {
       return {
+        visible:false,
+        about:'',
         listHeight: this.getWinHeight() - 180,
         fileUrl:fileUrl,
         orderId: '',
@@ -121,6 +141,32 @@
     },
     methods: {
       getWinHeight: getWinHeight,
+      //修改公告
+      editAbout(){
+        this.$http({
+          url: "/config/editNotice",
+          method: "GET",
+          params: {info:this.about}
+        }).then(data => {
+          if(data.errCode == 0){
+            Message({
+              showClose: true,
+              message: '修改成功!',
+              type: 'success'
+            });
+          }else {
+            Message({
+              showClose: true,
+              message: '修改失败!',
+              type: 'error'
+            });
+          }
+        }).catch(error => {
+        })
+      },
+      handleClose(done) {
+        this.visible = false;
+      },
       /* 分页 */
       handleCurrentChange(val) {
         this.currentPage = val;  // 当前页数

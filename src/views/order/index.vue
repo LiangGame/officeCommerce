@@ -166,20 +166,20 @@
 <script>
   import Qs from 'qs';
   import {MessageBox, Message} from 'element-ui';
-  import {getWinHeight, timestampToTime,fileUrl} from '@/common/common'
+  import {getWinHeight, timestampToTime, fileUrl} from '@/common/common'
 
   export default {
     name: "index",
     data() {
       return {
-        fileUrl:fileUrl,
+        fileUrl: fileUrl,
         listHeight: this.getWinHeight() - 180,
         userID: '',
         type: '0',
         tableData: [],
         //筛选条件
-        payMent:[],
-        status:[],
+        payMent: [],
+        status: [],
         payMents: [{
           value: 0,
           label: '未支付'
@@ -264,33 +264,49 @@
             }
           }).catch(error => {
           })
-        }else {
+        } else {
           this.loadData();
         }
       },
       //发货
       confirmOrder(orderID, userID, count, goodID) {
-        this.$http({
-          url: "/order/confirmOrder",
-          method: "GET",
-          params: {orderID: orderID, userID: userID, count: count, goodID: goodID}
-        }).then(data => {
-          console.log(data);
-          if (data.errCode == 0) {
-            Message({
-              showClose: true,
-              message: data.info,
-              type: 'success'
-            });
-            this.loadData();
-          } else {
-            Message({
-              showClose: true,
-              message: data.info,
-              type: 'error'
-            });
+        MessageBox({
+          title: '提示',
+          message: `确认充值？`,
+          showCancelButton: true,
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          beforeClose: (action, instance, done) => {
+            if (action === 'confirm') {
+              done();
+              this.$http({
+                url: "/order/confirmOrder",
+                method: "GET",
+                params: {orderID: orderID, userID: userID, count: count, goodID: goodID}
+              }).then(data => {
+                console.log(data);
+                if (data.errCode == 0) {
+                  Message({
+                    showClose: true,
+                    message: data.info,
+                    type: 'success'
+                  });
+                  this.loadData();
+                } else {
+                  Message({
+                    showClose: true,
+                    message: data.info,
+                    type: 'error'
+                  });
+                }
+              }).catch(error => {
+              })
+              return true
+            } else {
+              done();
+              return false
+            }
           }
-        }).catch(error => {
         })
       },
       //关闭弹窗
@@ -299,7 +315,7 @@
       },
       //获取订单列表
       loadData() {
-        const data = {page:this.currentPage,pageSize:this.pageCount,payMent:this.payMent,status:this.status};
+        const data = {page: this.currentPage, pageSize: this.pageCount, payMent: this.payMent, status: this.status};
         this.$http({
           url: "/order/getListAdmin",
           method: "POST",
@@ -388,7 +404,7 @@
           display: inline-block;
           width: 70%;
         }
-        .filter{
+        .filter {
           .el-input {
             display: inline-block;
             width: 100%;
@@ -403,7 +419,7 @@
             }
           }
           /*.el-button--small {*/
-            /*padding: 4px 6px;*/
+          /*padding: 4px 6px;*/
           /*}*/
         }
       }

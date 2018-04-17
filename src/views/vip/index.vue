@@ -58,9 +58,10 @@
           <el-table-column
             label="操作"
             align="center"
-            width="335">
+            width="400">
             <template slot-scope="scope">
               <el-button type="success" size="small" @click="showVipInfo = true;VipInfo=scope.row">查看</el-button>
+              <el-button type="success" size="small" :disabled="scope.row.status == '已认证'" @click.native="SMRZ = true;userID=scope.row.id">添加实名认证</el-button>
               <el-button type="primary" size="small" @click="visible = true;userID=scope.row.id">修改手机号</el-button>
               <el-button type="danger" size="small"
                          @click="resetUserStatus(scope.row.id)">重置实名认证
@@ -204,6 +205,35 @@
         <el-col :span="8">{{VipInfo.password}}</el-col>
       </el-row>
     </el-dialog>
+    <!--弹窗-->
+    <el-dialog
+      title="添加实名认证"
+      :visible="SMRZ"
+      width="500px"
+      :closeOnClickModal="false"
+      :before-close="handleClose">
+      <el-form :model="SMRZData" label-width="80px">
+        <!--<el-form-item label="用户ID">-->
+          <!--<el-input v-model="SMRZData.id" disabled></el-input>-->
+        <!--</el-form-item>-->
+        <el-form-item label="姓名">
+          <el-input v-model="SMRZData.realName"></el-input>
+        </el-form-item>
+        <el-form-item label="身份证号">
+          <el-input v-model="SMRZData.IDcard"></el-input>
+        </el-form-item>
+        <el-form-item label="开户行">
+          <el-input v-model="SMRZData.bankname"></el-input>
+        </el-form-item>
+        <el-form-item label="银行卡号">
+          <el-input v-model="SMRZData.creditCard"></el-input>
+        </el-form-item>
+        <p style="color: #e93b3b">开户行请填写 xx银行xx支行，如：“中国银行北京分行”</p>
+        <el-form-item label-width="0" align="center">
+          <el-button type="primary" size="small" @click="addSMRZD">提交</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -231,7 +261,11 @@
         showVipInfo: false,
         billInfo:false,
         billList:[],
-        VipInfo: {}
+        VipInfo: {},
+        SMRZ:false,
+        SMRZData:{
+
+        }
       }
     },
     methods: {
@@ -251,6 +285,7 @@
         this.visible = false;
         this.showVipInfo = false;
         this.billInfo = false;
+        this.SMRZ = false;
       },
       loadData() {
         this.$http({
@@ -371,6 +406,39 @@
             });
           }
         })
+      },
+      //添加实名认证
+      addSMRZD(){
+        this.SMRZData.id = this.userID;
+        this.$http({
+          url: "/admin/addUserStatus",
+          method: "POST",
+          data: this.SMRZData,
+          headers: {
+            'Content-Type': 'application/json;charset=UTF-8'
+          },
+          transformRequest: [function (data) {
+            let json = JSON.stringify(Qs.parse(data));
+            return json;
+          }]
+        }).then(data => {
+          console.log(data);
+          if (data.errCode == 0) {
+            Message({
+              showClose: true,
+              message: data.info,
+              type: 'success'
+            });
+            this.loadData();
+            this.SMRZ = false;
+          } else {
+            Message({
+              showClose: true,
+              message: data.info,
+              type: 'error'
+            });
+          }
+        })
       }
     },
     created() {
@@ -446,6 +514,9 @@
             th {
               color: #333;
             }
+          }
+          .el-button+.el-button{
+            margin-left: 0;
           }
         }
         .el-table__body-wrapper {

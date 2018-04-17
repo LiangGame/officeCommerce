@@ -121,7 +121,7 @@
               }else if(item.type == 2){
                 item.type = '出纳岗(提现)';
               }else if(item.type == 3){
-                item.type = '运营岗(商城管理、寄售挂哪里、数据分析)';
+                item.type = '运营岗(商城管理、寄售管理、数据分析)';
               }else if(item.type == 4){
                 item.type = '客服岗(会员管理、寄售管理)';
               }
