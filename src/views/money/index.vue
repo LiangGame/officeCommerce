@@ -281,102 +281,102 @@
       //确认充值
       comfirmRecharge(id) {
         MessageBox({
-                    title: '提示',
-                    message: `确认充值？`,
-                    showCancelButton: true,
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    beforeClose: (action, instance, done) => {
-                      if (action === 'confirm') {
-                        done();
-                        this.$http({
-                          url: "/order/comfirmRecharge",
-                          method: 'POST',
-                          data: {orderID: id},
-                          headers: {
-                            'Content-Type': 'application/json;charset=UTF-8'
-                          },
-                          transformRequest: [function (data) {
-                            let json = JSON.stringify(Qs.parse(data));
-                            return json;
-                          }]
-                        }).then(data => {
-                          if (data.errCode == 0) {
-                            this.getRechargeList();
-                            Message({
-                              showClose: true,
-                              message: data.info,
-                              type: 'success'
-                            });
-                          } else {
-                            Message({
-                              showClose: true,
-                              message: data.info,
-                              type: 'error'
-                            });
-                          }
-                        }).catch(err => {
-                          console.log(err)
-                          Message({
-                            showClose: true,
-                            message: '请求失败!',
-                            type: 'error'
-                          });
-                        })
-                          return true
-                        } else {
-                            done();
-                            return false
-                        }
-                    }
+          title: '提示',
+          message: `确认充值？`,
+          showCancelButton: true,
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          beforeClose: (action, instance, done) => {
+            if (action === 'confirm') {
+              done();
+              this.$http({
+                url: "/order/comfirmRecharge",
+                method: 'POST',
+                data: {orderID: id},
+                headers: {
+                  'Content-Type': 'application/json;charset=UTF-8'
+                },
+                transformRequest: [function (data) {
+                  let json = JSON.stringify(Qs.parse(data));
+                  return json;
+                }]
+              }).then(data => {
+                if (data.errCode == 0) {
+                  this.getRechargeList();
+                  Message({
+                    showClose: true,
+                    message: data.info,
+                    type: 'success'
+                  });
+                } else {
+                  Message({
+                    showClose: true,
+                    message: data.info,
+                    type: 'error'
+                  });
+                }
+              }).catch(err => {
+                console.log(err)
+                Message({
+                  showClose: true,
+                  message: '请求失败!',
+                  type: 'error'
+                });
+              })
+              return true
+            } else {
+              done();
+              return false
+            }
+          }
         })
 
       },
       //确认提现
       comfirmWithdrawals(id) {
         MessageBox({
-                    title: '提示',
-                    message: `确认打款？`,
-                    showCancelButton: true,
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    beforeClose: (action, instance, done) => {
-                      if (action === 'confirm') {
-                        done();
-                        let _this = this;
-                        this.$http({
-                          url: "/order/comfirmWithdrawals",
-                          method: 'POST',
-                          data: {orderID: id},
-                          headers: {
-                            'Content-Type': 'application/json;charset=UTF-8'
-                          },
-                          transformRequest: [function (data) {
-                            let json = JSON.stringify(Qs.parse(data));
-                            return json;
-                          }]
-                        }).then(data => {
-                          if (data.errCode == 0) {
-                            _this.getWithdrawals();
-                            Message({
-                              showClose: true,
-                              message: data.info,
-                              type: 'success'
-                            });
-                          } else {
-                            Message({
-                              showClose: true,
-                              message: data.info,
-                              type: 'error'
-                            });
-                          }
-                        })
-                          return true
-                        } else {
-                            done();
-                            return false
-                        }
-                    }
+          title: '提示',
+          message: `确认打款？`,
+          showCancelButton: true,
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          beforeClose: (action, instance, done) => {
+            if (action === 'confirm') {
+              done();
+              let _this = this;
+              this.$http({
+                url: "/order/comfirmWithdrawals",
+                method: 'POST',
+                data: {orderID: id},
+                headers: {
+                  'Content-Type': 'application/json;charset=UTF-8'
+                },
+                transformRequest: [function (data) {
+                  let json = JSON.stringify(Qs.parse(data));
+                  return json;
+                }]
+              }).then(data => {
+                if (data.errCode == 0) {
+                  _this.getWithdrawals();
+                  Message({
+                    showClose: true,
+                    message: data.info,
+                    type: 'success'
+                  });
+                } else {
+                  Message({
+                    showClose: true,
+                    message: data.info,
+                    type: 'error'
+                  });
+                }
+              })
+              return true
+            } else {
+              done();
+              return false
+            }
+          }
         })
       }
     },
@@ -414,9 +414,9 @@
       },
       str(value) {
         if (value) {
-          if(value.indexOf('-')!=-1){
+          if (value.indexOf('-') != -1) {
             return value.split('-')[1];
-          }else {
+          } else {
             return value
           }
         }
