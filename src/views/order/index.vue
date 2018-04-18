@@ -241,26 +241,30 @@
             console.log(data);
             if (data.errCode == 0) {
               this.tableData = data.info;
-              if (this.ruleForm.status == 0) {
-                this.ruleForm.status = '未支付'
-              } else if (this.ruleForm.status == 1) {
-                this.ruleForm.status = '财务未确认'
-              } else if (this.ruleForm.status == 2) {
-                this.ruleForm.status = '已付款'
-              } else if (this.ruleForm.status == 3) {
-                this.ruleForm.status = '已返第一次佣金'
-              } else if (this.ruleForm.status == 4) {
-                this.ruleForm.status = '已返全部佣金'
-              }
-              if (this.ruleForm.payMent == 1) {
-                this.ruleForm.payMent = '支付宝'
-              } else if (this.ruleForm.payMent == 2) {
-                this.ruleForm.payMent = '微信'
-              } else if (this.ruleForm.payMent == 3) {
-                this.ruleForm.payMent = '银行卡'
-              } else if (this.ruleForm.payMent == 4) {
-                this.ruleForm.payMent = '余额'
-              }
+                this.tableData.map(item => {
+                item.cerateTime = this.timestampToTime(item.cerateTime)
+                item.payTime = this.timestampToTime(item.payTime)
+                if (item.status == 0) {
+                  item.status = '未支付'
+                } else if (item.status == 1) {
+                  item.status = '财务未确认'
+                } else if (item.status == 2) {
+                  item.status = '已付款'
+                } else if (item.status == 3) {
+                  item.status = '已返第一次佣金'
+                } else if (item.status == 4) {
+                  item.status = '已返全部佣金'
+                }
+                if (item.payMent == 1) {
+                  item.payMent = '支付宝'
+                } else if (item.payMent == 2) {
+                  item.payMent = '微信'
+                } else if (item.payMent == 3) {
+                  item.payMent = '银行卡'
+                } else if (item.payMent == 4) {
+                  item.payMent = '余额'
+                }
+             })
             }
           }).catch(error => {
           })
