@@ -1,6 +1,11 @@
 <template>
   <div class="header_container">
     <ul class="nav-list">
+      <p class="logo">
+        <img src="../../assets/pic/person_logo.png" height="56" width="122"/>
+
+      </p>
+      <li style="float: left;width: 120px;line-height: 100px"><a>恒迈达管理系统</a></li>
       <li v-if="level == 0 || level == 1">
         <router-link to='/order' active-class="active-nav">订单管理</router-link>
       </li>
@@ -16,17 +21,23 @@
       <li v-if="level == 0 || level == 4">
         <router-link to='/vip' active-class="active-nav">会员管理</router-link>
       </li>
+      <li>
+        <router-link to='/status' active-class="active-nav">代理资格</router-link>
+      </li>
       <li v-if="level == 0 || level == 3">
         <router-link to='/jurisdiction' active-class="active-nav">权限管理</router-link>
       </li>
       <li v-if="level == 0 || level == 3">
         <router-link to='/dataAnalysis' active-class="active-nav">数据分析</router-link>
       </li>
+      <li>
+        <router-link to='/risk' active-class="active-nav">风控管理</router-link>
+      </li>
       <li v-if="level == 0">
         <router-link to='/setting' active-class="active-nav">设置</router-link>
       </li>
-      <li class="exit" @click="esc">
-        <div>退出系统</div>
+      <li class="exit" style="float: right" @click="esc">
+        <a class="exit_btn">退出系统</a>
       </li>
     </ul>
   </div>
@@ -60,21 +71,53 @@
     overflow: hidden;
     text-align: center;
     background: #409EFF;
+    @media screen and (max-width: 1280px) {
+      /*.exit {*/
+      /*cursor: pointer;*/
+      /*font-size: 16px;*/
+      /*color: #f6f6f6;*/
+      /*float: right;*/
+      /*margin-right: 150px;*/
+      /*}*/
+      .nav-list{
+        width: 1280px;
+      }
+    }
+    @media screen and (min-width: 1280px) {
+      .nav-list{
+        width: 80%;
+      }
+      /*.exit {*/
+      /*cursor: pointer;*/
+      /*font-size: 16px;*/
+      /*color: #f6f6f6;*/
+      /*position: absolute;*/
+      /*right: 150px;*/
+      /*}*/
+    }
     .nav-list {
       font-size: 0px;
+      /*width: 1280px;*/
+      margin: 0 auto;
+      .logo{
+        display: inline-block;
+        height: 56px;
+        float: left;
+      }
       li {
         display: inline-block;
-        width: 100px;
+        width: 6%;
         height: 56px;
         line-height: 56px;
         text-align: center;
         position: relative;
+        overflow: hidden;
         a {
           outline: none;
           display: inline-block;
           font-size: 16px;
           color: #f6f6f6;
-          width: 100px;
+          width: 100%;
           height: 56px;
           line-height: 56px;
           text-align: center;
@@ -98,23 +141,14 @@
           left: 43px;
           display: none;
         }
-      }
-      @media screen and (max-width: 1280px) {
-        .exit {
-          cursor: pointer;
-          font-size: 16px;
-          color: #f6f6f6;
-          float: right;
-          margin-right: 150px;
-        }
-      }
-      @media screen and (min-width: 1280px) {
-        .exit {
-          cursor: pointer;
-          font-size: 16px;
-          color: #f6f6f6;
-          position: absolute;
-          right: 150px;
+        .exit_btn{
+          width: 100%;
+          background: red;
+          height: 35px;
+          line-height: 35px;
+          margin-top: 10px;
+          border-radius: 4px;
+          float: left;
         }
       }
     }

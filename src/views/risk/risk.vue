@@ -1,5 +1,5 @@
 <template>
-  <div class="vip_container">
+  <div class="risk_container">
     <div class="main">
       <el-row class="top" :gutter="10">
         <el-col :span="6">
@@ -30,32 +30,16 @@
             align="center">
           </el-table-column>
           <el-table-column
-            label="余额"
-            align="center"
-            width="200">
-            <template slot-scope="scope">
-              <span style="display: inline-block;width: 100px">{{scope.row.balance}}</span>
-              <el-button type="success" size="small" @click="billInfo = true;getListAdminByUserID(scope.row.id)">查看</el-button>
-            </template>
-          </el-table-column>
-          <el-table-column
             prop="registTime"
-            label="注册时间"
+            label="购买时间"
             align="center">
           </el-table-column>
           <el-table-column
             prop="phone"
             label="类型"
-            align="center"
-            :filters="[{ text: '代', value: '4' }, { text: '售', value: '1' }, { text: '无', value: '2' }]"
-            :filter-method="filterTag"
-            :filter-multiple="false"
-            filter-placement="bottom-end">
+            align="center">
             <template slot-scope="scope">
               <el-button style="background: red;color:#fff" size="mini" disabled>代</el-button>
-              <el-button type="primary" style="color:#fff" size="mini" disabled>售</el-button>
-              <el-button style="background: black;color:#fff" size="mini" disabled>无</el-button>
-
             </template>
           </el-table-column>
           <el-table-column
@@ -74,20 +58,18 @@
           </el-table-column>
           <el-table-column
             prop="count"
-            label="订单数量"
+            label="状态"
             align="center">
+            <template slot-scope="scope">
+              <span>风险</span>
+            </template>
           </el-table-column>
           <el-table-column
             label="操作"
             align="center"
-            width="400">
+            width="200">
             <template slot-scope="scope">
-              <el-button type="success" size="small" @click="showVipInfo = true;VipInfo=scope.row">查看</el-button>
-              <el-button type="success" size="small" :disabled="scope.row.status == '已认证'" @click.native="SMRZ = true;userID=scope.row.id">添加实名认证</el-button>
-              <el-button type="primary" size="small" @click="visible = true;userID=scope.row.id">修改手机号</el-button>
-              <el-button type="danger" size="small"
-                         @click="resetUserStatus(scope.row.id)">重置实名认证
-              </el-button>
+              <el-button type="success" size="small">解除风险</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -236,7 +218,7 @@
       :before-close="handleClose">
       <el-form :model="SMRZData" label-width="80px">
         <!--<el-form-item label="用户ID">-->
-          <!--<el-input v-model="SMRZData.id" disabled></el-input>-->
+        <!--<el-input v-model="SMRZData.id" disabled></el-input>-->
         <!--</el-form-item>-->
         <el-form-item label="姓名">
           <el-input v-model="SMRZData.realName"></el-input>
@@ -504,7 +486,7 @@
 </script>
 
 <style lang="less">
-  .vip_container {
+  .risk_container {
     @media screen and (max-width: 1280px) {
       .main {
         width: 1100px;
@@ -570,3 +552,4 @@
     }
   }
 </style>
+

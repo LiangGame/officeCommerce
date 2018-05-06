@@ -15,7 +15,7 @@
             <el-form-item label="商品描述" prop="goodDescribe">
               <el-input type="textarea" v-model="ruleForm.goodDescribe"></el-input>
             </el-form-item>
-            <el-row>
+            <el-row v-if="!isWall">
               <el-col :span="6">
                 <el-form-item label="总代言费" prop="rewardTotal">
                   <el-input v-model="ruleForm.rewardTotal"></el-input>
@@ -36,13 +36,35 @@
                   <el-input v-model="ruleForm.price"></el-input>
                 </el-form-item>
               </el-col>
-              <el-col :span="12">
+              <el-col :span="8">
                 <el-form-item label="第一次代售回款" prop="price" label-width="150px">
                   <el-input v-model="ruleForm.first"></el-input>
                 </el-form-item>
               </el-col>
-              <el-col :span="12">
+              <el-col :span="8">
                 <el-form-item label="第二次代售回款" prop="price" label-width="150px">
+                  <el-input v-model="ruleForm.second"></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="月销数量" prop="price" label-width="150px">
+                  <el-input v-model="ruleForm.second"></el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row v-if="isWall">
+              <el-col :span="8">
+                <el-form-item label="总金额" prop="price" label-width="150px">
+                  <el-input v-model="ruleForm.first"></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="库存数量" prop="price" label-width="150px">
+                  <el-input v-model="ruleForm.second"></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="月销数量" prop="price" label-width="150px">
                   <el-input v-model="ruleForm.second"></el-input>
                 </el-form-item>
               </el-col>
@@ -84,7 +106,7 @@
 
   export default {
     name: "shopOperate",
-    props: ['visible', 'isEdit', 'info'],
+    props: ['visible', 'isEdit', 'info','isWall'],
     data() {
       return {
         title: "添加",

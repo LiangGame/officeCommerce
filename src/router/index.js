@@ -13,14 +13,35 @@ var routes = [
     path: '/', name: '首页', component: _import('layout/index'),
     redirect: '/order',
     children: [
-      {path: '/order', name: '订单管理', component: _import('order/index')},
-      {path: '/shop', name: '商城管理', component: _import('shop/index')},
-      {path: '/money', name: '财务管理', component: _import('money/index')},
+      {path: '/order', name: '订单管理', component: _import('order/index'),
+        redirect:'/order/ToOrder',
+        children:[
+          {path: '/order/ToOrder', name: '自提订单', component: _import('order/ztOrder')},
+          {path: '/order/BookingOrder', name: '代售订单', component: _import('order/dsOrder')},
+          {path: '/order/shopOrder', name: '商城订单', component: _import('order/scOrder')}
+        ]
+      },
+      {path: '/shop', name: '商城管理', component: _import('shop/index'),
+        redirect:'/shop/resellsMall',
+        children:[
+          {path: '/shop/resellsMall', name: '代售商城', component: _import('shop/dsShop')},
+          {path: '/shop/walletMall', name: '钱包商城', component: _import('shop/qbShop')},
+        ]
+      },
+      {path: '/money', name: '财务管理', component: _import('money/index'),
+        redirect:'/money/recharge',
+        children:[
+          {path: '/money/recharge', name: '充值', component: _import('money/recharge')},
+          {path: '/money/withdraw', name: '提现', component: _import('money/withdraw')},
+        ]
+      },
       {path: '/consignment', name: '寄售管理', component: _import('consignment/index')},
       {path: '/vip', name: '会员管理', component: _import('vip/index')},
       {path: '/jurisdiction', name: '权限管理', component: _import('jurisdiction/index')},
       {path: '/dataAnalysis', name: '数据分析', component: _import('dataAnalysis/index')},
-      {path: '/setting', name: '设置', component: _import('setting/setting')}
+      {path: '/setting', name: '设置', component: _import('setting/setting')},
+      {path: '/status', name: '代理资格', component: _import('status/status')},
+      {path: '/risk', name: '风控管理', component: _import('risk/risk')}
     ],
     beforeEnter: (to, from, next) => {
       if (to.path.indexOf('/login') == -1 && Cookie.get('level') == undefined) {

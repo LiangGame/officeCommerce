@@ -16,13 +16,13 @@
         <li class="payMent_content">
           <div class="payMent_title">微信：</div>
           <div class="img_container">
-            <img :src="payMent.zhifubao ? fileUrl+payMent.zhifubao : ''" alt="微信">
+            <img :src="payMent.weixin ? fileUrl+payMent.weixin : ''" alt="微信">
           </div>
         </li>
         <li class="payMent_content">
           <div class="payMent_title">支付宝：</div>
           <div class="img_container">
-            <img :src="payMent.weixin ? fileUrl+payMent.weixin : ''" alt="支付宝">
+            <img :src="payMent.zhifubao ? fileUrl+payMent.zhifubao : ''" alt="支付宝">
           </div>
         </li>
       </ul>
@@ -189,7 +189,7 @@
       weChathandleRemove(file, fileList) {
         console.log(file, fileList);
         this.weChat = [];
-        this.weixin = '';        
+        this.weixin = '';
       },
       //上传成功
       apliaySuccessFile(response) {
