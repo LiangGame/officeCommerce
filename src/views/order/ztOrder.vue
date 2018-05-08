@@ -364,7 +364,7 @@
       },
       //获取订单列表
       loadData() {
-        const data = {page: this.currentPage, pageSize: this.pageCount, payMent: this.payMent, status: this.status};
+        const data = {type:2,page: this.currentPage, pageSize: this.pageCount, payMent: this.payMent, status: this.status};
         this.$http({
           url: "/order/getListAdmin",
           method: "POST",

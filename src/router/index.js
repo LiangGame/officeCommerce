@@ -14,10 +14,10 @@ var routes = [
     redirect: '/order',
     children: [
       {path: '/order', name: '订单管理', component: _import('order/index'),
-        redirect:'/order/ToOrder',
+        redirect:'/order/BookingOrder',
         children:[
-          {path: '/order/ToOrder', name: '自提订单', component: _import('order/ztOrder')},
           {path: '/order/BookingOrder', name: '代售订单', component: _import('order/dsOrder')},
+          {path: '/order/ToOrder', name: '自提订单', component: _import('order/ztOrder')},
           {path: '/order/shopOrder', name: '商城订单', component: _import('order/scOrder')}
         ]
       },

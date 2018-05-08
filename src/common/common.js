@@ -2,7 +2,7 @@
 // api接口地址
 // export const apiUrl = 'http://hmd.jtcun.cn:3000';
 // export const apiUrl = 'http://103.205.5.222:3000';
-export const apiUrl = 'http://127.0.0.1:3000';
+export const apiUrl = 'http://121.43.180.179:3000';
 export const uploadUrl = apiUrl + '/upload';
 export const fileUrl = apiUrl + '/uploads/';
 
