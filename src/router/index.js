@@ -35,13 +35,23 @@ var routes = [
           {path: '/money/withdraw', name: '提现', component: _import('money/withdraw')},
         ]
       },
-      {path: '/consignment', name: '寄售管理', component: _import('consignment/index')},
+      // {path: '/consignment', name: '寄售管理', component: _import('consignment/index')},
       {path: '/vip', name: '会员管理', component: _import('vip/index')},
       {path: '/jurisdiction', name: '权限管理', component: _import('jurisdiction/index')},
       {path: '/dataAnalysis', name: '数据分析', component: _import('dataAnalysis/index')},
-      {path: '/setting', name: '设置', component: _import('setting/setting')},
-      {path: '/status', name: '代理资格', component: _import('status/status')},
-      {path: '/risk', name: '风控管理', component: _import('risk/risk')}
+      // {path: '/setting', name: '设置', component: _import('setting/setting')},
+      // {path: '/status', name: '代理资格', component: _import('status/status')},
+      {path: '/risk', name: '风控管理', component: _import('risk/risk')},
+      {path: '/config', name: '系统设置', component: _import('config/index'),
+        redirect: '/config/weChatSer',
+        children:[
+          {path: '/config/weChatSer', name: '微信客服', component: _import('config/weChatSer')},
+          {path: '/config/shopPic', name: '商城滚动图', component: _import('config/shopPic')},
+          {path: '/config/shopAddress', name: '自提地址', component: _import('config/shopAddress')},
+          {path: '/config/setting', name: '支付方式', component: _import('setting/setting')}
+        ]
+      },
+      {path: '/log', name: '操作日志', component: _import('log/log')},
     ],
     beforeEnter: (to, from, next) => {
       if (to.path.indexOf('/login') == -1 && Cookie.get('level') == undefined) {

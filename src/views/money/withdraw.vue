@@ -1,6 +1,21 @@
 <template>
     <div class="withdraw_container">
       <div class="main">
+        <el-row class="top" :gutter="10">
+          <!--<span>用户ID : </span>-->
+          <el-input v-model="userID" size="mini" style="width: 150px" placeholder="用户ID"></el-input>
+          <el-input v-model="realName" size="mini" style="width: 150px" placeholder="姓名"></el-input>
+          <el-input v-model="phone" size="mini" style="width: 150px" placeholder="手机号"></el-input>
+          <el-select v-model="status" size="mini" placeholder="请选择充值状态" collapse-tags class="filter">
+            <el-option
+              v-for="item in payMents"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+          <el-button type="primary" icon="el-icon-search" size="mini" @click="getWithdrawals">筛选</el-button>
+        </el-row>
         <!--Withdraw-->
         <div class="table_container">
           <el-table
@@ -35,7 +50,8 @@
             </el-table-column>
             <el-table-column
               label="提现时间"
-              align="center">
+              align="center"
+              width="100">
               <template slot-scope="scope">
                 {{timestampToTime(scope.row.time)}}
               </template>
@@ -51,7 +67,8 @@
             <el-table-column
               prop="address"
               label="操作"
-              align="center">
+              align="center"
+              v-if="isReadOnly == 0">
               <template slot-scope="scope">
                 <el-button type="primary" size="small" :disabled="scope.row.status == 1"
                            @click="comfirmWithdrawals(scope.row.id)">
@@ -75,7 +92,7 @@
             <!--<template>-->
             <!--</template>-->
           </el-pagination>
-          <span style="color: #666;">共计提现金额：3500元  </span>
+          <span style="color: #666;">共计提现金额：{{returnTotal}}元  </span>
         </div>
       </div>
     </div>
@@ -90,6 +107,8 @@
     name: "money",
     data() {
       return {
+        returnTotal:0,
+        isReadOnly: this.Cookie.get('isReadOnly'),
         listHeight: this.getWinHeight() - 100,
         activeName: 'first',
         orderId: '',
@@ -100,6 +119,20 @@
         currentPage: 1,
         pageCount: 50,
         totalCount: 0,
+        payMents: [{
+          value: '',
+          label: '全部'
+        }, {
+          value: 1,
+          label: '已打款'
+        }, {
+          value: 0,
+          label: '未打款'
+        }],
+        userID:'',
+        status:'',
+        realName:'',
+        phone:''
       }
     },
     methods: {
@@ -144,7 +177,8 @@
           console.log(data);
           if (data.errCode == 0) {
             this.totalCount = data.info.count;
-            this.tableData = data.info.data
+            this.tableData = data.info.data.data;
+            this.returnTotal = data.info.data.returnTotal
           } else {
             Message({
               showClose: true,
@@ -162,10 +196,14 @@
       },
       //获取提现列表
       getWithdrawals() {
+        let query = JSON.stringify({realName:this.realName,userID:this.userID,phone:this.phone});
+        if(!this.realName&&!this.userID&&!this.status){
+          query = "";
+        }
         this.$http({
           url: "/order/getWithdrawals",
           method: 'POST',
-          data: {page: this.currentPage, pageSize: this.pageCount},
+          data: {page: this.currentPage, pageSize: this.pageCount,status:this.status,query:query},
           headers: {
             'Content-Type': 'application/json;charset=UTF-8'
           },
@@ -178,7 +216,8 @@
           console.log(data);
           if (data.errCode == 0) {
             this.totalCount = data.info.count;
-            this.tableData = data.info.data
+            this.tableData = data.info.data.data;
+            this.returnTotal = data.info.data.returnTotal
           } else {
             Message({
               showClose: true,
@@ -303,7 +342,7 @@
       } else if (this.level == 2) {
         this.activeName = 'second'
       }
-      this.handleClick();
+      this.getWithdrawals();
     },
     filters: {
       Ment(value) {
@@ -359,7 +398,7 @@
       border: solid 1px #e6e6e6;
       .el-tabs__header {
         margin: 0;
-        margin-top: 10px;
+        /*margin-top: 10px;*/
       }
       .el-tabs--card > .el-tabs__header .el-tabs__nav {
         overflow: hidden;
@@ -371,7 +410,7 @@
       .top {
         margin-left: 0 !important;
         margin-right: 0 !important;
-        margin: 10px 0;
+        /*margin: 10px 0;*/
         border: solid 1px rgba(69, 157, 255, 0.6);
         box-sizing: border-box;
         padding: 5px 15px;

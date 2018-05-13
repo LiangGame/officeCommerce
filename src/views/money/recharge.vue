@@ -19,6 +19,21 @@
   <div class="recharge_container">
     <div class="main">
           <!--Recharge-->
+      <el-row class="top" :gutter="10">
+        <!--<span>用户ID : </span>-->
+        <el-input v-model="userID" size="mini" style="width: 150px" placeholder="用户ID"></el-input>
+        <el-input v-model="realName" size="mini" style="width: 150px" placeholder="姓名"></el-input>
+        <el-input v-model="phone" size="mini" style="width: 150px" placeholder="手机号"></el-input>
+        <el-select v-model="status" size="mini" placeholder="请选择充值状态" collapse-tags class="filter">
+          <el-option
+            v-for="item in payMents"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="getRechargeList">筛选</el-button>
+      </el-row>
           <div class="table_container">
             <el-table
               :data="tableData"
@@ -37,18 +52,19 @@
               </el-table-column>
               <el-table-column
                 label="充值时间"
-                align="center">
+                align="center"
+                width="100">
                 <template slot-scope="scope">
                   {{timestampToTime(scope.row.time)}}
                 </template>
               </el-table-column>
               <el-table-column
                 label="支付方式"
-                align="center"
-                :filters="[{ text: '余额', value: '4' }, { text: '支付宝', value: '1' }, { text: '微信', value: '2' }, { text: '银行卡', value: '3' }]"
-                :filter-method="filterTag"
-                :filter-multiple="false"
-                filter-placement="bottom-end">
+                align="center">
+                <!--:filters="[{ text: '余额', value: '4' }, { text: '支付宝', value: '1' }, { text: '微信', value: '2' }, { text: '银行卡', value: '3' }]"-->
+                <!--:filter-method="filterTag"-->
+                <!--:filter-multiple="false"-->
+                <!--filter-placement="bottom-end"-->
                 <template slot-scope="scope">
                   {{scope.row.payMent | Ment}}
                 </template>
@@ -68,7 +84,8 @@
               <el-table-column
                 prop="address"
                 label="操作"
-                align="center">
+                align="center"
+                v-if="isReadOnly == 0">
                 <template slot-scope="scope">
                   <el-button type="primary" size="small" :disabled="scope.row.status == 1"
                              @click="comfirmRecharge(scope.row.id)">
@@ -92,7 +109,7 @@
           <!--<template>-->
           <!--</template>-->
         </el-pagination>
-        <span style="color: #666;">共计充值金额：3500元  </span>
+        <span style="color: #666;">共计充值金额：{{orderTotal}}元  </span>
       </div>
     </div>
   </div>
@@ -107,12 +124,28 @@
     name: "money",
     data() {
       return {
+        orderTotal:0,
+        isReadOnly: this.Cookie.get('isReadOnly'),
+        phone:'',
+        realName:'',
+        userID:'',
+        status:'',
         listHeight: this.getWinHeight() - 100,
         activeName: 'first',
         orderId: '',
         type: '0',
         tableData: [{id: 1}],
         level: this.Cookie.get('level'),
+        payMents: [{
+          value: '',
+          label: '全部'
+        }, {
+          value: 0,
+          label: '财务未确认'
+        }, {
+          value: 1,
+          label: '财务已确认'
+        }],
         // 分页
         currentPage: 1,
         pageCount: 50,
@@ -148,10 +181,14 @@
       },
       //获取充值列表
       getRechargeList() {
+        let query = JSON.stringify({realName:this.realName,userID:this.userID,phone:this.phone});
+        if(!this.realName&&!this.userID&&!this.status){
+          query = "";
+        }
         this.$http({
           url: "/order/getRechargeList",
           method: 'POST',
-          data: {page: this.currentPage, pageSize: this.pageCount},
+          data: {page: this.currentPage, pageSize: this.pageCount,status:this.status,query:query},
           headers: {
             'Content-Type': 'application/json;charset=UTF-8'
           },
@@ -164,7 +201,8 @@
           console.log(data);
           if (data.errCode == 0) {
             this.totalCount = data.info.count;
-            this.tableData = data.info.data
+            this.tableData = data.info.data.data;
+            this.orderTotal = data.info.data.orderTotal
           } else {
             Message({
               showClose: true,
@@ -323,7 +361,7 @@
       } else if (this.level == 2) {
         this.activeName = 'second'
       }
-      this.handleClick();
+      this.getRechargeList();
     },
     filters: {
       Ment(value) {
@@ -391,7 +429,7 @@
       .top {
         margin-left: 0 !important;
         margin-right: 0 !important;
-        margin: 10px 0;
+        /*margin: 10px 0;*/
         border: solid 1px rgba(69, 157, 255, 0.6);
         box-sizing: border-box;
         padding: 5px 15px;

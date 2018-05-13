@@ -2,13 +2,18 @@
   <div class="vip_container">
     <div class="main">
       <el-row class="top" :gutter="10">
-        <el-col :span="6">
-          <span>关键字 : </span>
-          <el-input v-model="orderId" size="mini" placeholder="关键字"></el-input>
-        </el-col>
-        <el-col :span="6">
-          <el-button type="primary" icon="el-icon-search" size="mini" circle></el-button>
-        </el-col>
+        <el-input v-model="user_id" size="mini" style="width: 150px" placeholder="用户ID"></el-input>
+        <el-input v-model="user_phone" size="mini" style="width: 150px" placeholder="手机号"></el-input>
+        <el-input v-model="user_name" size="mini" style="width: 150px" placeholder="姓名"></el-input>
+        <el-select v-model="order_type" size="mini" placeholder="请选择类型" collapse-tags class="filter">
+          <el-option
+            v-for="item in types"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="loadData">筛选</el-button>
       </el-row>
       <div class="table_container">
         <el-table
@@ -32,30 +37,40 @@
           <el-table-column
             label="余额"
             align="center"
-            width="200">
+            width="100">
             <template slot-scope="scope">
-              <span style="display: inline-block;width: 100px">{{scope.row.balance}}</span>
-              <el-button type="success" size="small" @click="billInfo = true;getListAdminByUserID(scope.row.id)">查看</el-button>
+              <span style="display: inline-block;">{{scope.row.balance}}</span>
+              <el-button style="padding: 3px 5px;float: right" type="success" size="small"
+                         @click="billInfo = true;getListAdminByUserID(scope.row.id)">查看
+              </el-button>
             </template>
+          </el-table-column>
+          <el-table-column
+            prop="rewardPoint"
+            label="迈达币"
+            align="center">
           </el-table-column>
           <el-table-column
             prop="registTime"
             label="注册时间"
-            align="center">
+            align="center"
+            width="100">
           </el-table-column>
           <el-table-column
             prop="phone"
             label="类型"
-            align="center"
-            :filters="[{ text: '代', value: '4' }, { text: '售', value: '1' }, { text: '无', value: '2' }]"
-            :filter-method="filterTag"
-            :filter-multiple="false"
-            filter-placement="bottom-end">
+            align="center">
+            <!--:filters="[{ text: '代', value: '4' }, { text: '售', value: '1' }, { text: '无', value: '2' }]"-->
+            <!--:filter-method="filterTag"-->
+            <!--:filter-multiple="false"-->
+            <!--filter-placement="bottom-end"-->
             <template slot-scope="scope">
-              <el-button style="background: red;color:#fff" size="mini" disabled>代</el-button>
-              <el-button type="primary" style="color:#fff" size="mini" disabled>售</el-button>
-              <el-button style="background: black;color:#fff" size="mini" disabled>无</el-button>
-
+              <el-button style="background: red;color:#fff" size="mini" disabled v-if="scope.row.isAgent">代</el-button>
+              <el-button style="background: #3a8ee6;color:#fff" size="mini" disabled v-if="scope.row.count>0">售
+              </el-button>
+              <el-button style="background: black;color:#fff" size="mini" disabled
+                         v-if="scope.row.isAgent == 0&&scope.row.count<=0">无
+              </el-button>
             </template>
           </el-table-column>
           <el-table-column
@@ -64,12 +79,31 @@
             align="center">
           </el-table-column>
           <el-table-column
+            prop="agentEndTime"
+            label="代理资格过期时间"
+            align="center"
+            width="100">
+            <template slot-scope="scope">
+              {{timestampToTime(scope.row.agentEndTime)}}
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="isAuto"
+            label="是否自动续费"
+            align="center">
+            <template slot-scope="scope">
+              {{scope.row.isAuto==0?'未设置':scope.row.isAuto==1?'自动续费':'不续费'}}
+            </template>
+          </el-table-column>
+          <el-table-column
             prop="member"
             label="下线会员"
             align="center">
             <template slot-scope="scope">
               {{scope.row.member}}
-              <el-button type="success" size="small" @click="showVipInfo = true;VipInfo=scope.row">详情</el-button>
+              <el-button style="padding: 3px 5px;float: right" type="success" size="small" @click="seeVip(scope.row)">
+                详情
+              </el-button>
             </template>
           </el-table-column>
           <el-table-column
@@ -80,10 +114,13 @@
           <el-table-column
             label="操作"
             align="center"
-            width="400">
+            width="400"
+            v-if="isReadOnly == 0">
             <template slot-scope="scope">
               <el-button type="success" size="small" @click="showVipInfo = true;VipInfo=scope.row">查看</el-button>
-              <el-button type="success" size="small" :disabled="scope.row.status == '已认证'" @click.native="SMRZ = true;userID=scope.row.id">添加实名认证</el-button>
+              <el-button type="success" size="small" :disabled="scope.row.status == '已认证'"
+                         @click.native="SMRZ = true;userID=scope.row.id">添加实名认证
+              </el-button>
               <el-button type="primary" size="small" @click="visible = true;userID=scope.row.id">修改手机号</el-button>
               <el-button type="danger" size="small"
                          @click="resetUserStatus(scope.row.id)">重置实名认证
@@ -208,7 +245,7 @@
         <el-col :span="4">上级ID：</el-col>
         <el-col :span="8">{{VipInfo.chief}}</el-col>
         <el-col :span="4">下级会员：</el-col>
-        <el-col :span="8">{{VipInfo.member}}个</el-col>
+        <el-col :span="8">{{VipInfo.member}}</el-col>
       </el-row>
       <el-row>
         <el-col :span="4">实名认证：</el-col>
@@ -217,15 +254,48 @@
         <el-col :span="8">{{VipInfo.IDcard}}</el-col>
       </el-row>
       <el-row>
-        <el-col :span="4">开户行：</el-col>
-        <el-col :span="8">{{VipInfo.bankname}}</el-col>
+        <el-col :span="4">密码：</el-col>
+        <el-col :span="8">{{VipInfo.password}}</el-col>
         <el-col :span="4">银行卡号：</el-col>
         <el-col :span="8">{{VipInfo.creditCard}}</el-col>
       </el-row>
       <el-row>
-        <el-col :span="4">密码：</el-col>
-        <el-col :span="8">{{VipInfo.password}}</el-col>
+        <el-col :span="4">开户行：</el-col>
+        <el-col :span="20">{{VipInfo.bankname}}</el-col>
       </el-row>
+      <hr>
+      <div class="first_vip">
+        <h3><img slot="icon" src="../../../src/assets/pic/group_fill.png" alt="">一级会员({{member.level1Count}})</h3>
+        <ul>
+          <li v-for="item in member.level1Res">
+            <div class="left fl">
+              <p class="vipType" style="background: #e93b3b" v-if="item.isAgent"></p>
+              <p class="vipType" style="background: #5a5a5a" v-if="item.isAgent == 0&&item.orderCount == 0"></p>
+              <p class="vipType" style="background: #56abf2" v-if="item.orderCount > 0"></p>
+            </div>
+            <div class="right fl">
+              <p>{{item.realName ? item.realName:'未实名'}} x {{item.orderCount}}</p>
+              <p>ID:{{item.id}}</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="second_vip">
+        <h3><img slot="icon" src="../../../src/assets/pic/group_fill.png" alt="">二级会员({{member.level2Count}})</h3>
+        <ul>
+          <li v-for="item in member.level2Res">
+            <div class="left fl">
+              <p class="vipType" style="background: #e93b3b" v-if="item.isAgent"></p>
+              <p class="vipType" style="background: #5a5a5a" v-if="item.isAgent == 0&&item.orderCount == 0"></p>
+              <p class="vipType" style="background: #56abf2" v-if="item.orderCount > 0"></p>
+            </div>
+            <div class="right fl">
+              <p>{{item.realName ? item.realName:'未实名'}} x {{item.orderCount}}</p>
+              <p>ID:{{item.id}}</p>
+            </div>
+          </li>
+        </ul>
+      </div>
     </el-dialog>
     <!--弹窗-->
     <el-dialog
@@ -236,7 +306,7 @@
       :before-close="handleClose">
       <el-form :model="SMRZData" label-width="80px">
         <!--<el-form-item label="用户ID">-->
-          <!--<el-input v-model="SMRZData.id" disabled></el-input>-->
+        <!--<el-input v-model="SMRZData.id" disabled></el-input>-->
         <!--</el-form-item>-->
         <el-form-item label="姓名">
           <el-input v-model="SMRZData.realName"></el-input>
@@ -268,10 +338,11 @@
     name: "vip",
     data() {
       return {
+        isReadOnly: this.Cookie.get('isReadOnly'),
         listHeight: this.getWinHeight() - 180,
         orderId: '',
         userID: '',
-        type: '0',
+        type: '',
         tableData: [],
         phone: '',
         // 分页
@@ -281,21 +352,37 @@
         //弹窗
         visible: false,
         showVipInfo: false,
-        billInfo:false,
-        billList:[],
+        billInfo: false,
+        billList: [],
         VipInfo: {},
-        SMRZ:false,
-        SMRZData:{
-
-        }
+        member: {},
+        SMRZ: false,
+        SMRZData: {},
+        //筛选
+        types: [
+          {
+            value: '',
+            label: '全部'
+          }, {
+            value: '1',
+            label: '代理'
+          }, {
+            value: '2',
+            label: '有代售订单'
+          }, {
+            value: '3',
+            label: '无'
+          },
+        ],
+        order_type:'',
+        user_id:'',
+        user_name:'',
+        user_phone:''
       }
     },
     methods: {
       getWinHeight: getWinHeight,
       timestampToTime: timestampToTime,
-      filterTag(value, row) {
-        return row.tag === value;
-      },
       /* 分页 */
       handleCurrentChange(val) {
         this.currentPage = val;  // 当前页数
@@ -313,10 +400,15 @@
         this.SMRZ = false;
       },
       loadData() {
+        let query = JSON.stringify({phone:this.user_phone,realName:this.user_name,userID:this.user_id})
+
+        if(!this.order_type&&!this.user_phone&&!this.user_id&&!this.user_name){
+          query = "";
+        }
         this.$http({
           url: "/admin/getAllUser",
           method: "POST",
-          data: {page: this.currentPage, pageSize: this.pageCount},
+          data: {page: this.currentPage, pageSize: this.pageCount,type:this.order_type,query:query},
           headers: {
             'Content-Type': 'application/json;charset=UTF-8'
           },
@@ -414,7 +506,7 @@
         });
       },
       //获取指定用户的余额
-      getListAdminByUserID(id){
+      getListAdminByUserID(id) {
         this.$http({
           url: "/balance/getListAdminByUserID",
           method: "GET",
@@ -433,7 +525,7 @@
         })
       },
       //添加实名认证
-      addSMRZD(){
+      addSMRZD() {
         this.SMRZData.id = this.userID;
         this.$http({
           url: "/admin/addUserStatus",
@@ -464,6 +556,21 @@
             });
           }
         })
+      },
+      //查看会员详情
+      seeVip(userInfo) {
+        this.showVipInfo = true;
+        this.VipInfo = userInfo;
+        console.log(userInfo);
+        this.$http({
+          url: "/user/getMember",
+          method: "GET",
+          params: {id: userInfo.id}
+        }).then(data => {
+          if (data.errCode == 0) {
+            this.member = data.info
+          }
+        })
       }
     },
     created() {
@@ -483,19 +590,31 @@
         }
         return type;
       },
-      status(value){
+      status(value) {
         // 余额变动类型：1，购买。2，代售回款。3，代言费。4，提现。5，充值
         var status = null;
-        if(value == 1){
+        if (value == 1) {
           status = '购买'
-        }else if(value == 2) {
+        } else if (value == 2) {
           status = '代售回款'
-        }else if(value == 3) {
-          status = '代言费'
-        }else if(value == 4) {
+        } else if (value == 3) {
+          status = '提成'
+        } else if (value == 4) {
           status = '提现'
-        }else if(value == 5) {
+        } else if (value == 5) {
           status = '充值'
+        } else if (value == 6) {
+          status = '购买代理资格'
+        } else if (value == 7) {
+          status = '代理资格提成'
+        } else if (value == 8) {
+          status = '代理资格回款'
+        } else if (value == 9) {
+          status = '代理资格退款'
+        } else if (value == 10) {
+          status = '自提订单回款'
+        } else if (value == 11) {
+          status = '购买迈达币'
         }
         return status
       }
@@ -505,6 +624,9 @@
 
 <style lang="less">
   .vip_container {
+    .fl {
+      float: left;
+    }
     @media screen and (max-width: 1280px) {
       .main {
         width: 1100px;
@@ -518,7 +640,7 @@
       }
     }
     .main {
-      .yes{
+      .yes {
         float: left;
         display: inline-block;
         width: 20px;
@@ -548,10 +670,10 @@
               color: #333;
             }
           }
-          .el-button+.el-button{
+          .el-button + .el-button {
             margin-left: 0;
           }
-          .cell{
+          .cell {
             line-height: normal;
           }
         }
@@ -560,12 +682,55 @@
         }
       }
     }
-    .vipInfo{
-      .el-row{
+    .vipInfo {
+      .el-dialog__body {
+        height: 500px;
+        overflow-y: auto;
+      }
+      .el-row {
         line-height: 35px;
-        .el-col{
+        .el-col {
           height: 35px;
         }
+      }
+      h3 {
+        color: #666;
+        margin-bottom: 8px;
+        img {
+          width: 32px;
+          height: 32px;
+        }
+      }
+      ul {
+        overflow: hidden;
+        margin-bottom: 8px;
+        li {
+          height: 46px;
+          width: 33.33%;
+          overflow: hidden;
+          float: left;
+          margin: 5px 0;
+          .left {
+            margin-right: 5px;
+            .vipType {
+              display: block;
+              width: 20px;
+              height: 20px;
+              border-radius: 50%;
+              margin-top: 0px;
+              margin-right: 0px;
+            }
+          }
+          .right {
+            width: auto;
+          }
+        }
+      }
+      .first_vip {
+        overflow: hidden;
+      }
+      .second_vip {
+        overflow: hidden;
       }
     }
   }

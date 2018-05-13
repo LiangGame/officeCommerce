@@ -1,11 +1,10 @@
 <template>
   <div class="header_container">
     <ul class="nav-list">
-      <p class="logo">
-        <img src="../../assets/pic/person_logo.png" height="56" width="122"/>
-
-      </p>
-      <li style="float: left;width: 120px;line-height: 100px"><a>恒迈达管理系统</a></li>
+      <li class="logo">
+        <img src="../../assets/pic/person_logo.png" height="46" width="100"/>
+      </li>
+      <!--<li style="float: left;width: 120px;line-height: 100px"><a>恒迈达管理系统</a></li>-->
       <li v-if="level == 0 || level == 1">
         <router-link to='/order' active-class="active-nav">订单管理</router-link>
       </li>
@@ -15,27 +14,33 @@
       <li v-if="level == 0 || level == 1 || level == 2">
         <router-link to='/money' active-class="active-nav">财务管理</router-link>
       </li>
-      <li v-if="level == 0 || level == 3 || level == 4">
-        <router-link to='/consignment' active-class="active-nav">寄售管理</router-link>
-      </li>
+      <!--<li v-if="level == 0 || level == 3 || level == 4">-->
+        <!--<router-link to='/consignment' active-class="active-nav">寄售管理</router-link>-->
+      <!--</li>-->
       <li v-if="level == 0 || level == 4">
         <router-link to='/vip' active-class="active-nav">会员管理</router-link>
       </li>
-      <li>
-        <router-link to='/status' active-class="active-nav">代理资格</router-link>
-      </li>
+      <!--<li>-->
+        <!--<router-link to='/status' active-class="active-nav">代理资格</router-link>-->
+      <!--</li>-->
       <li v-if="level == 0 || level == 3">
         <router-link to='/jurisdiction' active-class="active-nav">权限管理</router-link>
       </li>
       <li v-if="level == 0 || level == 3">
         <router-link to='/dataAnalysis' active-class="active-nav">数据分析</router-link>
       </li>
-      <li>
+      <li v-if="level == 0 || level == 3">
         <router-link to='/risk' active-class="active-nav">风控管理</router-link>
       </li>
       <li v-if="level == 0">
-        <router-link to='/setting' active-class="active-nav">设置</router-link>
+        <router-link to='/config' active-class="active-nav">系统设置</router-link>
       </li>
+      <li v-if="level == 0">
+        <router-link to='/log' active-class="active-nav">操作日志</router-link>
+      </li>
+      <!--<li v-if="level == 0">-->
+        <!--<router-link to='/setting' active-class="active-nav">设置</router-link>-->
+      <!--</li>-->
       <li class="exit" style="float: right" @click="esc">
         <a class="exit_btn">退出系统</a>
       </li>
@@ -66,7 +71,7 @@
 <style lang="less">
   .header_container {
     width: 100%;
-    min-width: 1280px;
+    min-width: 1366px;
     margin: 0 auto;
     overflow: hidden;
     text-align: center;
@@ -97,12 +102,13 @@
     }
     .nav-list {
       font-size: 0px;
-      /*width: 1280px;*/
+      min-width: 1280px;
       margin: 0 auto;
       .logo{
-        display: inline-block;
-        height: 56px;
-        float: left;
+        /*display: inline-block;*/
+        /*height: 56px;*/
+        /*float: left;*/
+        width: 150px;
       }
       li {
         display: inline-block;

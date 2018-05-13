@@ -16,7 +16,7 @@ axios.interceptors.request.use(function(config){
     //     vue.$router.push('/login');
     // }
     config.data = Qs.stringify(config.data);
-  console.log(19,config);
+  // console.log(19,config);
   return config;
 },function(err){
     //Do something with request error

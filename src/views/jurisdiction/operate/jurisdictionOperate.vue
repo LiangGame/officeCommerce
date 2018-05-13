@@ -26,6 +26,12 @@
             </el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="是否只读">
+          <el-radio-group v-model="data.isReadOnly">
+            <el-radio :label="1">是</el-radio>
+            <el-radio :label="0">否</el-radio>
+          </el-radio-group>
+        </el-form-item>
         <el-form-item label-width="0" align="center">
           <el-button type="primary" @click="submitForm('data')">提交</el-button>
           <el-button @click="resetForm('data')">重置</el-button>
@@ -48,7 +54,8 @@
         data: {
           user: '',
           password: '',
-          type: ''
+          type: '',
+          isReadOnly: 0,
         },
         options: [
           {
@@ -78,18 +85,18 @@
       if (this.isEdit == '1') {
         this.title = '编辑';
         this.data = this.info;
-        if(this.data.type == '超级管理员(所有)'){
+        if (this.data.type == '超级管理员(所有)') {
           this.data.type = '0';
-        }else if(this.data.type == '会计岗(充值、订单管理)'){
+        } else if (this.data.type == '会计岗(充值、订单管理)') {
           this.data.type = '1';
-        }else if(this.data.type == '出纳岗(提现)'){
+        } else if (this.data.type == '出纳岗(提现)') {
           this.data.type = '2';
-        }else if(this.data.type == '运营岗(商城管理、寄售管理、数据分析)'){
+        } else if (this.data.type == '运营岗(商城管理、寄售管理、数据分析)') {
           this.data.type = '3';
-        }else if(this.data.type == '客服岗(会员管理、寄售管理)'){
+        } else if (this.data.type == '客服岗(会员管理、寄售管理)') {
           this.data.type = '4';
         }
-        console.log('管理员数据:',this.data);
+        console.log('管理员数据:', this.data);
       } else if (this.isEdit == '2') {
         this.title = '查看'
       }
@@ -100,7 +107,7 @@
       },
 
       submitForm(url) {
-        if(this.isEdit == 0){
+        if (this.isEdit == 0) {
           this.$http({
             url: '/admin/addAdmin',
             method: 'POST',
@@ -132,7 +139,7 @@
           }).catch(error => {
             console.log(error);
           })
-        }else {
+        } else {
           this.$http({
             url: '/admin/editAdmin',
             method: 'POST',

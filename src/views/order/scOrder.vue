@@ -1,34 +1,20 @@
 <template>
   <div class="scOrder_container">
     <div class="main">
-      <!--<el-row class="top" :gutter="10">-->
-      <!--<el-col :span="5">-->
-      <!--<span>用户ID : </span>-->
-      <!--<el-input v-model="userID" size="mini" placeholder="用户ID"></el-input>-->
-      <!--<el-button type="primary" icon="el-icon-search" size="mini" circle @click="showOperate"></el-button>-->
-      <!--</el-col>-->
-      <!--<el-col :span="12">-->
-      <!--<span>订单状态 : </span>-->
-      <!--<el-select v-model="status" size="mini" placeholder="请选择" multiple collapse-tags class="filter">-->
-      <!--<el-option-->
-      <!--v-for="item in payMents"-->
-      <!--:key="item.value"-->
-      <!--:label="item.label"-->
-      <!--:value="item.value">-->
-      <!--</el-option>-->
-      <!--</el-select>-->
-      <!--<span>支付方式 : </span>-->
-      <!--<el-select v-model="payMent" size="mini" placeholder="请选择" multiple collapse-tags class="filter">-->
-      <!--<el-option-->
-      <!--v-for="item in status1"-->
-      <!--:key="item.value"-->
-      <!--:label="item.label"-->
-      <!--:value="item.value">-->
-      <!--</el-option>-->
-      <!--</el-select>-->
-      <!--<el-button type="primary" icon="el-icon-search" size="mini" @click="loadData">筛选</el-button>-->
-      <!--</el-col>-->
-      <!--</el-row>-->
+      <el-row class="top" :gutter="10">
+        <el-input v-model="userID" size="mini" style="width: 150px" placeholder="用户ID"></el-input>
+        <el-input v-model="phone" size="mini" style="width: 150px" placeholder="手机号"></el-input>
+        <el-input v-model="realName" size="mini" style="width: 150px" placeholder="姓名"></el-input>
+        <el-select v-model="status" size="mini" placeholder="请选择订单状态" collapse-tags class="filter">
+          <el-option
+            v-for="item in payMents"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="loadData">筛选</el-button>
+      </el-row>
       <div class="table_container">
         <el-table
           :data="tableData"
@@ -38,58 +24,66 @@
           <el-table-column
             prop="id"
             label="订单号"
-            align="center">
+            align="center"
+            width="80">
           </el-table-column>
           <el-table-column
             prop="userID"
             label='用户ID'
             align="center"
-            width="160"
-            :render-header="renderHeader">
+            width="80"
+          >
+            <!--:render-header="renderHeader"-->
           </el-table-column>
           <el-table-column
             prop="cerateTime"
             label="下单时间"
-            align="center">
+            align="center"
+            width="100">
           </el-table-column>
           <el-table-column
             prop="count"
             label="购买数量"
-            align="center">
+            align="center"
+            width="80">
           </el-table-column>
           <el-table-column
             prop="totalPrice"
             label="总金额"
-            align="center">
+            align="center"
+            width="100">
           </el-table-column>
           <el-table-column
             prop="payTime"
             label="付款时间"
-            align="center">
+            align="center"
+            width="100">
           </el-table-column>
           <el-table-column
             prop="payMent"
             label="支付方式"
             align="center">
+            <template slot-scope="scope">
+              {{scope.row.payMent | paymentsFilter}}
+            </template>
           </el-table-column>
           <el-table-column
             prop="status"
             label="订单状态"
-            align="center"
-            :filters="filters"
-            :filter-method="filterTag"
-            :filter-multiple="false"
-            filter-placement="bottom-end">
+            align="center">
+            <template slot-scope="scope">
+              {{scope.row.status | payStatusFilter}}
+            </template>
+            <!--:filters="filters"-->
+            <!--:filter-method="loadData"-->
+            <!--:filter-multiple="false"-->
+            <!--filter-placement="bottom-end"-->
           </el-table-column>
           <el-table-column
             label="操作"
             align="center">
             <template slot-scope="scope">
-              <!--<el-button type="success" size="small" @click="showOperate(scope.row.userID)">查看</el-button>-->
-              <el-button type="primary" size="small" :disabled="scope.row.status == '已付款'||scope.row.status != '财务未确认'"
-                         @click="confirmOrder(scope.row.id,scope.row.userID,scope.row.count,scope.row.goodID)">
-                {{scope.row.status == '已付款'||scope.row.status != '财务未确认' ? '已发货':'发货'}}
-              </el-button>
+              <el-button type="primary" size="small" @click="showOperate(scope.row.id)">查看</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -97,79 +91,62 @@
       <!--分页-->
       <div style="line-height: 32px">
         <el-pagination
+          small
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
           :current-page.sync="currentPage"
           :page-sizes="[50, 100, 500]"
-          :page-size="10"
+          :page-size="50"
           layout="total,sizes, prev, pager, next"
           :total="totalCount"
           style="display: inline-block">
-          <!--<template>-->
-          <!--</template>-->
         </el-pagination>
-        <span style="color: #666;">共计已付款金额：3500元    共计未付款金额：3500元</span>
+        <span style="color: #666;">共计已付款金额：{{orderTotal}}元 </span>
       </div>
+
       <!--弹窗-->
       <el-dialog
         title="查看订单详情"
         :visible="visible"
-        width="1000px"
+        width="800px"
         :closeOnClickModal="false"
-        :before-close="handleClose">
-
-        <!--  <el-row :gutter="20">
-            <el-col :span="12">
-              <el-col :span="12">商品名称</el-col>
-              <el-col :span="12">{{ruleForm.goodName}}</el-col>
-              <el-col :span="12">单价</el-col>
-              <el-col :span="12">{{ruleForm.price}}</el-col>
-              <el-col :span="12">数量</el-col>
-              <el-col :span="12">{{ruleForm.count}}</el-col>
-              <el-col :span="12">总价</el-col>
-              <el-col :span="12">{{ruleForm.totalPrice}}</el-col>
-              <el-col :span="12">商品图片</el-col>
-              <el-col :span="12">
-                <img :src="fileUrl+ruleForm.img" :alt="ruleForm.goodName">
-              </el-col>
-              &lt;!&ndash;<el-form-item label="商品名称" prop="goodName">&ndash;&gt;
-                &lt;!&ndash;<span class="good_info" v-text="ruleForm.goodName"></span>&ndash;&gt;
-                &lt;!&ndash;<el-input v-model="ruleForm.goodName"></el-input>&ndash;&gt;
-              &lt;!&ndash;</el-form-item>&ndash;&gt;
-              &lt;!&ndash;<el-form-item label="单价" prop="goodName">&ndash;&gt;
-                &lt;!&ndash;<span class="good_info" v-text="ruleForm.price"></span>&ndash;&gt;
-              &lt;!&ndash;</el-form-item>&ndash;&gt;
-              &lt;!&ndash;<el-form-item label="数量" prop="goodName">&ndash;&gt;
-                &lt;!&ndash;<span class="good_info">{{ruleForm.count}}</span>&ndash;&gt;
-              &lt;!&ndash;</el-form-item>&ndash;&gt;
-              &lt;!&ndash;<el-form-item label="总价" prop="goodName">&ndash;&gt;
-                &lt;!&ndash;<span class="good_info">{{ruleForm.totalPrice}}</span>&ndash;&gt;
-              &lt;!&ndash;</el-form-item>&ndash;&gt;
-              &lt;!&ndash;<el-form-item label="商品图片" prop="goodDescribe">&ndash;&gt;
-                &lt;!&ndash;<img :src="fileUrl+ruleForm.img" :alt="ruleForm.goodName">&ndash;&gt;
-              &lt;!&ndash;</el-form-item>&ndash;&gt;
+        :before-close="handleClose"
+        class="goods_content_dialog">
+        <el-row>
+          <el-col :span="24">
+            <el-col :span="5" :gutter="10">
+              <img :src="fileUrl+goods.img" alt="" width="120" height="120">
             </el-col>
-            <el-col :span="12">
-              &lt;!&ndash;<el-form-item label="用户名称" prop="goodName">&ndash;&gt;
-                &lt;!&ndash;<span class="good_info">{{ruleForm.userID}}</span>&ndash;&gt;
-              &lt;!&ndash;</el-form-item>&ndash;&gt;
-              &lt;!&ndash;<el-form-item label="下单时间" prop="goodName">&ndash;&gt;
-                &lt;!&ndash;<span class="good_info">{{ruleForm.cerateTime}}</span>&ndash;&gt;
-              &lt;!&ndash;</el-form-item>&ndash;&gt;
-              &lt;!&ndash;<el-form-item label="付款时间" prop="goodName">&ndash;&gt;
-                &lt;!&ndash;<span class="good_info">{{ruleForm.payTime}}</span>&ndash;&gt;
-              &lt;!&ndash;</el-form-item>&ndash;&gt;
-              &lt;!&ndash;<el-form-item label="支付方式" prop="goodName">&ndash;&gt;
-                &lt;!&ndash;<span class="good_info">{{ruleForm.payMent}}</span>&ndash;&gt;
-              &lt;!&ndash;</el-form-item>&ndash;&gt;
-              &lt;!&ndash;<el-form-item label="订单状态" prop="goodName">&ndash;&gt;
-                &lt;!&ndash;<span class="good_info">{{ruleForm.status}}</span>&ndash;&gt;
-              &lt;!&ndash;</el-form-item>&ndash;&gt;
-
-
+            <el-col :span="19">
+              <p>{{goods.id}}</p>
+              <p>数量：{{goods.count}}</p>
+              <p style="color: #e93b3b;font-size: 18px;">金额：￥{{goods.totalPrice}}</p>
             </el-col>
-          </el-row>-->
-        <!--</el-form>-->
+          </el-col>
+          <el-col :span="24" class="goodsInfo_bottom">
+            <el-col :span="4">会员ID：</el-col>
+            <el-col :span="20">{{goods.userID}}</el-col>
+            <el-col :span="4">下单时间：</el-col>
+            <el-col :span="20">{{timestampToTime(goods.cerateTime)}}</el-col>
+            <el-col :span="4">订单状态：</el-col>
+            <el-col :span="20">{{goods.status |payStatusFilter}}</el-col>
+            <el-col :span="4">支付方式：</el-col>
+            <el-col :span="20">{{goods.payMent |paymentsFilter}}</el-col>
+            <!--<el-col :span="4" v-if="goods.status==0">剩余付款时间：</el-col>-->
+            <!--<el-col :span="20" v-if="goods.status==0">{{goods.cerateTime}}</el-col>-->
+            <el-col :span="4">收货地址：</el-col>
+            <el-col :span="20">{{goods.payMent |paymentsFilter}}</el-col>
+            <el-col :span="4">联系人：</el-col>
+            <el-col :span="20">{{goods.payMent |paymentsFilter}}</el-col>
+            <el-col :span="4">快递信息：</el-col>
+            <el-col :span="20">
+              <el-input v-model="expressage" size="mini" placeholder="输入如：顺丰快递0000000000" clearable style="width: 200px"></el-input>
+            </el-col>
+          </el-col>
+          <el-col :span="24" align="center" v-if="goods.status<=5 && isReadOnly == 0">
+            <el-button type="primary" :disabled="goods.status>=5" @click="confirmOrder(goods.id,goods.userID,goods.count,goods.goodID)">发货</el-button>
+          </el-col>
+        </el-row>
       </el-dialog>
     </div>
   </div>
@@ -184,36 +161,34 @@
     name: "index",
     data() {
       return {
+        orderTotal:'',
+        returnTotal:'',
+        isReadOnly: this.Cookie.get('isReadOnly'),
+        expressage:'',
+        filter: '',
         fileUrl: fileUrl,
-        listHeight: this.getWinHeight() - 100,
+        listHeight: this.getWinHeight() - 145,
         userID: '',
+        phone:'',
+        realName:'',
+        orderId:'',
         type: '0',
         tableData: [],
         //筛选条件
         payMent: [],
-        status: [],
-        filters: [
-          {text: '未支付', value: '0'},
-          {text: '财务未确认', value: '1'},
-          {text: '已付款', value: '2'},
-          {text: '已返第一次佣金', value: '3'},
-          {text: '已返全部佣金', value: '4'}
-        ],
+        status: '',
         payMents: [{
+          value: '',
+          label: '全部'
+        },{
           value: 0,
-          label: '未支付'
-        }, {
-          value: 1,
-          label: '财务未确认'
+          label: '未付款'
         }, {
           value: 2,
           label: '已付款'
         }, {
-          value: 3,
-          label: '已返第一次佣金'
-        }, {
-          value: 4,
-          label: '已返全部佣金'
+          value: 6,
+          label: '已收货'
         }],
         status1: [{
           value: 1,
@@ -234,35 +209,12 @@
         totalCount: 0,
         //弹窗
         visible: false,
-        ruleForm: {},
+        goods: {}
       }
     },
     methods: {
       getWinHeight: getWinHeight,
       timestampToTime: timestampToTime,
-      renderHeader(createElement, {column}) {
-        return createElement(
-          'div',
-          [
-            createElement('el-input', {
-              attrs: {
-                type: 'text'
-              }
-            }),
-            createElement('el-button',{
-              attrs: {
-                icon: 'el-icon-search',
-                type:'primary',
-                circle:'',
-                size:'mini'
-              }
-            }),
-            createElement('span', [column.label])
-          ])
-      },
-      filterTag(value, row) {
-        return row.tag === value;
-      },
       /* 分页 */
       handleCurrentChange(val) {
         this.currentPage = val;  // 当前页数
@@ -273,52 +225,24 @@
         this.loadData(this.datePicker);
       },
       //查看订单详情
-      showOperate() {
-        if (this.userID) {
-          this.$http({
-            url: "/order/getListAdminByUserID",
-            method: "GET",
-            params: {userID: this.userID}
-          }).then(data => {
-            console.log(data);
-            if (data.errCode == 0) {
-              this.tableData = data.info;
-              this.tableData.map(item => {
-                item.cerateTime = this.timestampToTime(item.cerateTime)
-                item.payTime = this.timestampToTime(item.payTime)
-                if (item.status == 0) {
-                  item.status = '未支付'
-                } else if (item.status == 1) {
-                  item.status = '财务未确认'
-                } else if (item.status == 2) {
-                  item.status = '已付款'
-                } else if (item.status == 3) {
-                  item.status = '已返第一次佣金'
-                } else if (item.status == 4) {
-                  item.status = '已返全部佣金'
-                }
-                if (item.payMent == 1) {
-                  item.payMent = '支付宝'
-                } else if (item.payMent == 2) {
-                  item.payMent = '微信'
-                } else if (item.payMent == 3) {
-                  item.payMent = '银行卡'
-                } else if (item.payMent == 4) {
-                  item.payMent = '余额'
-                }
-              })
-            }
-          }).catch(error => {
-          })
-        } else {
-          this.loadData();
-        }
+      showOperate(id) {
+        this.orderId = id;
+        this.visible = true;
+        this.$http({
+          url: "/order/getOrderDetail",
+          method: "GET",
+          params: {id:id}
+        }).then(data =>{
+          if(data.errCode == 0){
+            this.goods = data.info;
+          }
+        })
       },
       //发货
       confirmOrder(orderID, userID, count, goodID) {
         MessageBox({
           title: '提示',
-          message: `确认充值？`,
+          message: `确认发货？`,
           showCancelButton: true,
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -326,12 +250,21 @@
             if (action === 'confirm') {
               done();
               this.$http({
-                url: "/order/confirmOrder",
-                method: "GET",
-                params: {orderID: orderID, userID: userID, count: count, goodID: goodID}
+                url: "/order/confirmMallOrder",
+                method: "POST",
+                data: {orderID: this.orderId, type:3,trackingNumber:this.expressage},
+                headers: {
+                  'Content-Type': 'application/json;charset=UTF-8'
+                },
+                transformRequest: [function (data) {
+                  let _data = Qs.parse(data);
+                  let json = JSON.stringify(_data);
+                  return json;
+                }]
               }).then(data => {
                 console.log(data);
-                if (data.errCode == 0) {
+                if (data.errorCode == 0) {
+                  this.visible = false;
                   Message({
                     showClose: true,
                     message: data.info,
@@ -361,7 +294,19 @@
       },
       //获取订单列表
       loadData() {
-        const data = {type:3,page: this.currentPage, pageSize: this.pageCount, payMent: this.payMent, status: this.status};
+        let query = JSON.stringify({userID: this.userID, phone: this.phone,realName:this.realName});
+        if(!this.userID&&!this.phone&&!this.realName){
+          query = ""
+        }
+        const data = {
+          type: 3,
+          page: this.currentPage,
+          pageSize: this.pageCount,
+          payMent: this.payMent,
+          status: this.status,
+          query: query
+        };
+        console.log(JSON.stringify(data));
         this.$http({
           url: "/order/getListAdmin",
           method: "POST",
@@ -379,31 +324,17 @@
           console.log(data);
           if (data.errCode == 0) {
             this.totalCount = data.info.count;
-            this.tableData = data.info.data;
+            this.tableData = data.info.data.data;
+            this.orderTotal = data.info.data.orderTotal
+            this.returnTotal = data.info.data.returnTotal
             this.tableData.map(item => {
               item.cerateTime = this.timestampToTime(item.cerateTime)
               item.payTime = this.timestampToTime(item.payTime)
-              if (item.status == 0) {
-                item.status = '未支付'
-              } else if (item.status == 1) {
-                item.status = '财务未确认'
-              } else if (item.status == 2) {
-                item.status = '已付款'
-              } else if (item.status == 3) {
-                item.status = '已返第一次佣金'
-              } else if (item.status == 4) {
-                item.status = '已返全部佣金'
-              }
-              if (item.payMent == 1) {
-                item.payMent = '支付宝'
-              } else if (item.payMent == 2) {
-                item.payMent = '微信'
-              } else if (item.payMent == 3) {
-                item.payMent = '银行卡'
-              } else if (item.payMent == 4) {
-                item.payMent = '余额'
-              }
+              console.log('303', item.status);
+
+
             })
+            return true;
           } else {
             Message({
               showClose: true,
@@ -486,11 +417,11 @@
                   span {
                     float: left;
                   }
-                  button{
+                  button {
                     float: left;
                     margin: 0 5px;
                   }
-                  .el-button.is-circle{
+                  .el-button.is-circle {
                     padding: 5px;
                   }
                 }
@@ -503,6 +434,15 @@
         }
       }
     }
-
+    .goods_content_dialog {
+      .el-col {
+        font-size: 16px;
+        line-height: 2em;
+      }
+      .goodsInfo_bottom {
+        margin-top: 5px;
+        border-top: solid 2px #e6e6e6;
+      }
+    }
   }
 </style>

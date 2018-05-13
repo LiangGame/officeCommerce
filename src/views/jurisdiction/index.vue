@@ -2,14 +2,14 @@
   <div class="jurisdiction_container">
     <div class="main">
       <el-row class="top" :gutter="10">
-        <el-col :span="6">
-          <span>关键字 : </span>
-          <el-input v-model="orderId" size="mini" placeholder="关键字"></el-input>
-        </el-col>
-        <el-col :span="6">
-          <el-button type="primary" icon="el-icon-search" size="mini" circle></el-button>
-        </el-col>
-        <el-col :span="12" style="text-align: right">
+        <!--<el-col :span="6">-->
+          <!--<span>关键字 : </span>-->
+          <!--<el-input v-model="orderId" size="mini" placeholder="关键字"></el-input>-->
+        <!--</el-col>-->
+        <!--<el-col :span="6">-->
+          <!--<el-button type="primary" icon="el-icon-search" size="mini" circle></el-button>-->
+        <!--</el-col>-->
+        <el-col :span="24" style="text-align: right" v-if="isReadOnly == 0">
           <el-button type="danger" icon="el-icon-plus" size="mini" @click="operate(0,0)">添加</el-button>
         </el-col>
       </el-row>
@@ -37,7 +37,8 @@
           <el-table-column
             prop="address"
             label="操作"
-            align="center">
+            align="center"
+            v-if="isReadOnly == 0">
             <template slot-scope="scope">
               <buttons @edit="operate(scope.row,1)"
                        @delete="del(scope.row.user)"/>
@@ -74,6 +75,7 @@
     components: {jurisdictionOperate, Buttons},
     data() {
       return {
+        isReadOnly: this.Cookie.get('isReadOnly'),
         listHeight: this.getWinHeight() - 180,
         orderId: '',
         info: null,

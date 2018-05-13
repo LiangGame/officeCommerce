@@ -61,10 +61,10 @@
                 return json;
               }]
             }).then(data => {
-              console.log(data);
               if (data.errCode == 0) {
                 var inFifteenMinutes = new Date(new Date().getTime() + 60 * 60 * 1000);
                 this.Cookie.set('level', data.info.type, {expires: inFifteenMinutes});
+                this.Cookie.set('isReadOnly', data.info.isReadOnly);
                 let level = this.Cookie.get('level');
                 if (level == 2) {
                   this.$router.push('/money');

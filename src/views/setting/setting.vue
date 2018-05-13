@@ -4,7 +4,7 @@
       <ul>
         <li class="title">支付方式：
           <span style="margin-left: 150px">
-            <el-button type="danger" size="mini" @click="visible = true">修改支付方式</el-button>
+            <el-button type="danger" size="mini" @click="visible = true" v-if="isReadOnly == 0">修改支付方式</el-button>
           </span>
         </li>
         <li class="payMent_content">
@@ -111,6 +111,7 @@
     name: "setting",
     data() {
       return {
+        isReadOnly: this.Cookie.get('isReadOnly'),
         uploadUrl: uploadUrl,
         fileUrl: fileUrl,
         payMent: {},
@@ -240,13 +241,13 @@
   .setting_container {
     @media screen and (max-width: 1280px) {
       .main {
-        width: 1100px;
+        /*width: 1100px;*/
         margin: 0 auto;
       }
     }
     @media screen and (min-width: 1366px) {
       .main {
-        width: 80%;
+        /*width: 80%;*/
         margin: 0 auto;
       }
     }

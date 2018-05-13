@@ -48,24 +48,39 @@
               </el-col>
               <el-col :span="8">
                 <el-form-item label="月销数量" prop="price" label-width="150px">
-                  <el-input v-model="ruleForm.second"></el-input>
+                  <el-input v-model="ruleForm.volume"></el-input>
                 </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="第一次余额百分比" prop="perFirst" label-width="150px">
+                  <el-input-number v-model="ruleForm.perFirst" :min="0" :max="100" size="mini"
+                                   label="第一次余额百分比"></el-input-number>
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="第二次余额百分比" prop="perSecond" label-width="150px">
+                  <el-input-number v-model="ruleForm.perSecond" :min="0" :max="100" size="mini"
+                                   label="第二次余额百分比"></el-input-number>
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+
               </el-col>
             </el-row>
             <el-row v-if="isWall">
               <el-col :span="8">
                 <el-form-item label="总金额" prop="price" label-width="150px">
-                  <el-input v-model="ruleForm.first"></el-input>
+                  <el-input v-model="ruleForm.price"></el-input>
                 </el-form-item>
               </el-col>
+              <!--<el-col :span="8">-->
+              <!--<el-form-item label="库存数量" prop="kNum" label-width="150px">-->
+              <!--<el-input v-model="ruleForm.kNum"></el-input>-->
+              <!--</el-form-item>-->
+              <!--</el-col>-->
               <el-col :span="8">
-                <el-form-item label="库存数量" prop="price" label-width="150px">
-                  <el-input v-model="ruleForm.second"></el-input>
-                </el-form-item>
-              </el-col>
-              <el-col :span="8">
-                <el-form-item label="月销数量" prop="price" label-width="150px">
-                  <el-input v-model="ruleForm.second"></el-input>
+                <el-form-item label="月销数量" prop="volume" label-width="150px">
+                  <el-input v-model="ruleForm.volume"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
@@ -100,17 +115,17 @@
 </template>
 
 <script>
-  import {uploadUrl,fileUrl} from "@/common/common";
+  import {uploadUrl, fileUrl} from "@/common/common";
   import Qs from 'qs';
   import {Message} from 'element-ui'
 
   export default {
     name: "shopOperate",
-    props: ['visible', 'isEdit', 'info','isWall'],
+    props: ['visible', 'isEdit', 'info', 'isWall'],
     data() {
       return {
         title: "添加",
-        isOne:false,
+        isOne: false,
         uploadUrl: uploadUrl,
         ruleForm: {
           goodName: '',
@@ -120,10 +135,10 @@
           max: '',
           img: '',
           price: '',
-          first:'',
-          second:''
+          first: '',
+          second: ''
         },
-        fileList:[],
+        fileList: [],
         rules: {
           goodName: [{required: true, message: '请输入商品名称', trigger: 'blur'}, {
             min: 3,
@@ -134,19 +149,20 @@
           rewardTotal: [{required: true, message: '请输入总代言费', trigger: 'blur'}],
           rewardSecond: [{required: true, message: '请输入二级代言费', trigger: 'blur'}],
           price: [{required: true, message: '请输入商品总价', trigger: 'blur'}],
-          max: [{required: true, message: '请输入最多购买数量', trigger: 'blur'}]
+          count: [{required: true, message: '总金额', trigger: 'blur'}],
+          volume: [{required: true, message: '月销数量', trigger: 'blur'}]
         }
       };
     },
     created() {
       console.log('文件上传路径:', uploadUrl);
-      console.log('商品数据:',this.info);
+      console.log('商品数据:', this.info);
       if (this.isEdit == '1') {
         this.title = '编辑';
         let imgList = fileUrl + this.info.img;
         console.log(imgList);
         // this.info.img = '';
-        this.fileList.push({name:this.info.goodName,url:imgList})
+        this.fileList.push({name: this.info.goodName, url: imgList})
         // this.info.img.push({name:this.info.goodName,url:imgList});
         this.ruleForm = this.info;
       }
@@ -173,6 +189,15 @@
       },
       //提交数据
       submitData(url, type) {
+        if (this.isEdit == 0) {
+          if (this.isWall) {
+            this.ruleForm.type = 3;
+          } else {
+            this.ruleForm.type = 1;
+          }
+        } else {
+          this.ruleForm.type = null;
+        }
         this.isOne = true;
         this.$http({
           url: url,
@@ -210,15 +235,15 @@
       handleRemove(file, fileList) {
         console.log(file, fileList);
         this.fileList = [];
-        this.ruleForm = '';
+        // this.ruleForm = '';
       },
       //上传成功
-      successFile(response){
+      successFile(response) {
         console.log(response);
-        if(response.errCode == 0){
-          this.fileList.push({name:response.info,url:response.info});
+        if (response.errCode == 0) {
+          this.fileList.push({name: response.info, url: response.info});
           this.ruleForm.img = response.info;
-        }else {
+        } else {
           Message({
             showClose: true,
             message: response.info,
@@ -228,7 +253,7 @@
       },
       //上传文件回调
       handlePreview(file) {
-        console.log(174,file);
+        console.log(174, file);
       },
       //上传文件
       submitUpload() {

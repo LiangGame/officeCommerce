@@ -9,9 +9,9 @@
         <el-col :span="6">
           <!--<el-button type="primary" icon="el-icon-search" size="mini" circle></el-button>-->
         </el-col>
-        <el-col :span="24" style="text-align: right">
-          <el-button type="danger" size="mini" @click.native="visible = true">修改公告</el-button>
-          <el-button type="danger" icon="el-icon-plus" size="mini">添加滚动图</el-button>
+        <el-col :span="24" style="text-align: right" v-if="isReadOnly == 0">
+          <!--<el-button type="danger" size="mini" @click.native="visible = true">修改公告</el-button>-->
+          <!--<el-button type="danger" icon="el-icon-plus" size="mini">添加滚动图</el-button>-->
           <el-button type="danger" icon="el-icon-plus" size="mini" @click="operate(0,0)">添加商品</el-button>
         </el-col>
       </el-row>
@@ -22,7 +22,7 @@
           :height="listHeight"
           style="width: 100%">
           <el-table-column
-            prop="goodID"
+            prop="id"
             label="编号"
             align="center">
           </el-table-column>
@@ -54,27 +54,18 @@
             align="center">
           </el-table-column>
           <el-table-column
-            prop="rewardTotal"
-            label="一级佣金"
-            align="center">
-          </el-table-column>
-          <el-table-column
-            prop="rewardSecond"
-            label="二级佣金"
-            align="center">
-          </el-table-column>
-          <el-table-column
-            prop="max"
-            label="最大购买数量"
+            prop="volume"
+            label="月销量"
             align="center">
           </el-table-column>
           <el-table-column
             prop="address"
             label="操作"
-            align="center">
+            align="center"
+            v-if="isReadOnly == 0">
             <template slot-scope="scope">
               <buttons @edit="operate(scope.row,1)"
-                       @delete="del(scope.row.goodID)"/>
+                       @delete="del(scope.row.id)"/>
             </template>
           </el-table-column>
         </el-table>
@@ -125,9 +116,10 @@
     components: {shopOperate, Buttons},
     data() {
       return {
+        isReadOnly: this.Cookie.get('isReadOnly'),
         visible:false,
         about:'',
-        listHeight: this.getWinHeight() - 160,
+        listHeight: this.getWinHeight() - 140,
         fileUrl:fileUrl,
         orderId: '',
         type: '0',
@@ -183,7 +175,7 @@
         this.$http({
           url: "/goods",
           method: "GET",
-          params: {}
+          params: {type:3}
         }).then(data => {
           console.log(data);
           if (data.length) {
@@ -276,7 +268,7 @@
       .top {
         margin-left: 0 !important;
         margin-right: 0 !important;
-        margin: 10px 0;
+        /*margin: 10px 0;*/
         border: solid 1px rgba(69, 157, 255, 0.6);
         box-sizing: border-box;
         padding: 5px 15px;

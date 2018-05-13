@@ -1,15 +1,15 @@
 <template>
   <div class="risk_container">
     <div class="main">
-      <el-row class="top" :gutter="10">
-        <el-col :span="6">
-          <span>关键字 : </span>
-          <el-input v-model="orderId" size="mini" placeholder="关键字"></el-input>
-        </el-col>
-        <el-col :span="6">
-          <el-button type="primary" icon="el-icon-search" size="mini" circle></el-button>
-        </el-col>
-      </el-row>
+      <!--<el-row class="top" :gutter="10">-->
+        <!--<el-col :span="6">-->
+          <!--<span>关键字 : </span>-->
+          <!--<el-input v-model="orderId" size="mini" placeholder="关键字"></el-input>-->
+        <!--</el-col>-->
+        <!--<el-col :span="6">-->
+          <!--<el-button type="primary" icon="el-icon-search" size="mini" circle></el-button>-->
+        <!--</el-col>-->
+      <!--</el-row>-->
       <div class="table_container">
         <el-table
           :data="tableData"
@@ -67,7 +67,8 @@
           <el-table-column
             label="操作"
             align="center"
-            width="200">
+            width="200"
+            v-if="isReadOnly == 0">
             <template slot-scope="scope">
               <el-button type="success" size="small">解除风险</el-button>
             </template>
@@ -250,6 +251,7 @@
     name: "vip",
     data() {
       return {
+        isReadOnly: this.Cookie.get('isReadOnly'),
         listHeight: this.getWinHeight() - 180,
         orderId: '',
         userID: '',

@@ -20,7 +20,12 @@ import 'element-ui/lib/theme-chalk/index.css';
 Vue.use(ElementUI);
 
 Vue.config.productionTip = false
+//注册全局过滤器
+import * as filters from '@/common/filters.js';
 
+Object.keys(filters).forEach(key => {
+  Vue.filter(key, filters[key])
+})
 
 /* eslint-disable no-new */
 // new Vue({
