@@ -117,7 +117,7 @@
             width="400"
             v-if="isReadOnly == 0">
             <template slot-scope="scope">
-              <el-button type="success" size="small" @click="showVipInfo = true;VipInfo=scope.row">查看</el-button>
+              <!--<el-button type="success" size="small" @click="showVipInfo = true;VipInfo=scope.row">查看</el-button>-->
               <el-button type="success" size="small" :disabled="scope.row.status == '已认证'"
                          @click.native="SMRZ = true;userID=scope.row.id">添加实名认证
               </el-button>
