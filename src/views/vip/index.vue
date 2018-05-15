@@ -265,6 +265,7 @@
       </el-row>
       <hr>
       <div class="first_vip">
+        <div>有效代售单量：{{orderCount}}</div>
         <h3><img slot="icon" src="../../../src/assets/pic/group_fill.png" alt="">一级会员({{member.level1Count}})</h3>
         <ul>
           <li v-for="item in member.level1Res">
@@ -338,6 +339,7 @@
     name: "vip",
     data() {
       return {
+        orderCount:0,
         isReadOnly: this.Cookie.get('isReadOnly'),
         listHeight: this.getWinHeight() - 180,
         orderId: '',
@@ -568,7 +570,13 @@
           params: {id: userInfo.id}
         }).then(data => {
           if (data.errCode == 0) {
-            this.member = data.info
+            this.member = data.info;
+            data.info.level1Res.map(item => {
+              this.orderCount += item.orderCount
+            })
+            data.info.level2Res.map(item => {
+              this.orderCount += item.orderCount
+            })
           }
         })
       }
