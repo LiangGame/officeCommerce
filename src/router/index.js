@@ -32,7 +32,16 @@ var routes = [
       },
       {
         path: '/money', name: '财务管理', component: _import('money/index'),
-        children: []
+        children: [{
+          path: '/money/recharge',
+          name: '充值',
+          component: _import('money/recharge')
+        },
+          {
+            path: '/money/withdraw',
+            name: '提现',
+            component: _import('money/withdraw')
+          }]
       },
       // {path: '/consignment', name: '寄售管理', component: _import('consignment/index')},
       {path: '/vip', name: '会员管理', component: _import('vip/index')},
@@ -65,20 +74,11 @@ var routes = [
 ]
 
 if (Cookie.get('level') == 2) {
-  routes[0].children[2].redirect = '/money/withdraw';
-  routes[0].children[2].children.push({path: '/money/withdraw', name: '提现', component: _import('money/withdraw')})
+  // routes[0].children[2].redirect = '/money/withdraw';
+  // routes[0].children[2].children.push({path: '/money/withdraw', name: '提现', component: _import('money/withdraw')})
 } else if (Cookie.get('level') == 0 || Cookie.get('level') == 1) {
-  routes[0].children[2].redirect = '/money/recharge';
-  routes[0].children[2].children.push({
-      path: '/money/recharge',
-      name: '充值',
-      component: _import('money/recharge')
-    },
-    {
-      path: '/money/withdraw',
-      name: '提现',
-      component: _import('money/withdraw')
-    })
+  // routes[0].children[2].redirect = '/money/recharge';
+  // routes[0].children[2].children.push()
 }
 
 //去除地址栏 #
