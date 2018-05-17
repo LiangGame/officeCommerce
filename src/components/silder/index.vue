@@ -50,8 +50,16 @@
             return;
           }
         })
-        console.log(this.$router.options.routes[this.num0].children[order1].children)
+        // console.log(this.$router.options.routes[this.num0].children[order1])
         let routerData = this.$router.options.routes[this.num0].children[order1].children;
+        // console.log(this.navData);
+        if(this.Cookie.get('level')==2){
+          if(routerData[0].name == '充值'){
+            routerData = routerData.slice(1,2);
+          }
+        }else {
+          routerData = this.$router.options.routes[this.num0].children[order1].children;
+        }
         this.navData = routerData;
       }
     },

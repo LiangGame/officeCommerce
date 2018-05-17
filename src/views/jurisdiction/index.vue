@@ -119,11 +119,11 @@
               if(item.type == 0){
                 item.type = '超级管理员(所有)';
               }else if(item.type == 1){
-                item.type = '会计岗(充值、订单管理)';
+                item.type = '会计岗(充值、提现、订单管理)';
               }else if(item.type == 2){
                 item.type = '出纳岗(提现)';
               }else if(item.type == 3){
-                item.type = '运营岗(商城管理、寄售管理、数据分析)';
+                item.type = '运营岗(商城管理、订单管理)';
               }else if(item.type == 4){
                 item.type = '客服岗(会员管理、寄售管理)';
               }

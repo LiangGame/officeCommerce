@@ -5,7 +5,7 @@
         <img src="../../assets/pic/person_logo.png" height="46" width="100"/>
       </li>
       <!--<li style="float: left;width: 120px;line-height: 100px"><a>恒迈达管理系统</a></li>-->
-      <li v-if="level == 0 || level == 1">
+      <li v-if="level == 0 || level == 1|| level == 3">
         <router-link to='/order' active-class="active-nav">订单管理</router-link>
       </li>
       <li v-if="level == 0 || level == 3">
