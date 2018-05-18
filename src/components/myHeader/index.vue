@@ -8,7 +8,7 @@
       <li v-if="level == 0 || level == 1|| level == 3">
         <router-link to='/order' active-class="active-nav">订单管理</router-link>
       </li>
-      <li v-if="level == 0 || level == 3">
+      <li v-if="level == 0">
         <router-link to='/shop' active-class="active-nav">商城管理</router-link>
       </li>
       <li v-if="level == 0 || level == 1 || level == 2">
@@ -17,19 +17,19 @@
       <!--<li v-if="level == 0 || level == 3 || level == 4">-->
         <!--<router-link to='/consignment' active-class="active-nav">寄售管理</router-link>-->
       <!--</li>-->
-      <li v-if="level == 0 || level == 4">
+      <li v-if="level == 0|| level == 3 || level == 4">
         <router-link to='/vip' active-class="active-nav">会员管理</router-link>
       </li>
       <!--<li>-->
         <!--<router-link to='/status' active-class="active-nav">代理资格</router-link>-->
       <!--</li>-->
-      <li v-if="level == 0 || level == 3">
+      <li v-if="level == 0">
         <router-link to='/jurisdiction' active-class="active-nav">权限管理</router-link>
       </li>
-      <li v-if="level == 0 || level == 3">
+      <li v-if="level == 0">
         <router-link to='/dataAnalysis' active-class="active-nav">数据分析</router-link>
       </li>
-      <li v-if="level == 0 || level == 3">
+      <li v-if="level == 0">
         <router-link to='/risk' active-class="active-nav">风控管理</router-link>
       </li>
       <li v-if="level == 0">
