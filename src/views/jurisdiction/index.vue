@@ -123,7 +123,7 @@
               }else if(item.type == 2){
                 item.type = '出纳岗(提现)';
               }else if(item.type == 3){
-                item.type = '运营岗(商城管理、订单管理)';
+                item.type = '运营岗(会员管理、订单管理)';
               }else if(item.type == 4){
                 item.type = '客服岗(会员管理、寄售管理)';
               }

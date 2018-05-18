@@ -67,11 +67,11 @@
                 this.Cookie.set('isReadOnly', data.info.isReadOnly);
                 let level = this.Cookie.get('level');
                 if (level == 2) {
-                  this.$router.push('/money');
+                  this.$router.push('/money/withdraw');
                 } else if (level == 3) {
-                  this.$router.push('/shop');
+                  this.$router.push('/order');
                 } else if (level == 4) {
-                  this.$router.push('/consignment');
+                  this.$router.push('/vip');
                 } else {
                   this.$router.push('/');
                 }
