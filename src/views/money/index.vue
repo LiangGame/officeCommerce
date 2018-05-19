@@ -10,11 +10,11 @@
           <!--<li v-for="(item, index) in navData" :key = 'index' :class="[item.icon?'arrow':'']">-->
             <!--<router-link :to = "item.path" active-class="active" @click.native="$emit('updateKey')">{{item.name}}</router-link>-->
           <!--</li>-->
-          <li v-if="level == 0||level == 1">
-            <router-link to="/money/recharge">充值</router-link>
-          </li>
           <li v-if="level == 0||level == 1||level == 2">
-            <router-link to="/money/withdraw">提现</router-link>
+            <router-link to="/money/withdraw" active-class="active">提现</router-link>
+          </li>
+          <li v-if="level == 0||level == 1">
+            <router-link to="/money/recharge" active-class="active">充值</router-link>
           </li>
         </ul>
       </div>

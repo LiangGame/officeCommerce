@@ -130,7 +130,7 @@
         realName:'',
         userID:'',
         status:'',
-        listHeight: this.getWinHeight() - 100,
+        listHeight: this.getWinHeight() - 145,
         activeName: 'first',
         orderId: '',
         type: '0',
@@ -161,11 +161,11 @@
       /* 分页 */
       handleCurrentChange(val) {
         this.currentPage = val;  // 当前页数
-        this.loadData(this.datePicker);
+        this.getRechargeList(this.datePicker);
       },
       handleSizeChange(val) {
         this.pageCount = val; // 每页条数
-        this.loadData(this.datePicker);
+        this.getRechargeList(this.datePicker);
       },
       handleClick(tab, event) {
         console.log(tab);

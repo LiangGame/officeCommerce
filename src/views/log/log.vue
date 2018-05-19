@@ -73,11 +73,11 @@
       /* 分页 */
       handleCurrentChange(val) {
         this.currentPage = val;  // 当前页数
-        this.loadData(this.datePicker);
+        this.getLog();
       },
       handleSizeChange(val) {
         this.pageCount = val; // 每页条数
-        this.loadData(this.datePicker);
+        this.getLog();
       },
       getLog() {
         this.$http({

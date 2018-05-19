@@ -32,6 +32,7 @@ var routes = [
       },
       {
         path: '/money', name: '财务管理', component: _import('money/index'),
+        redirect:'/money/withdraw',
         children: [{
           path: '/money/recharge',
           name: '充值',
